@@ -1,53 +1,43 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { gsap } from "gsap";
+import React from "react";
 
 export function DeskBotLogo({ className = "w-12 h-12" }: { className?: string }) {
-  const headRef = useRef<SVGGElement>(null);
-  const eyesRef = useRef<SVGGElement>(null);
-  const antennaRef = useRef<SVGCircleElement>(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Gentle floating/hover loop
-      gsap.to(headRef.current, {
-        y: -3,
-        duration: 1.8,
-        repeat: -1,
-        yoyo: true,
-        ease: "power1.inOut",
-      });
-
-      // Periodic blink animation
-      const blinkTl = gsap.timeline({ repeat: -1, repeatDelay: 3.5 });
-      blinkTl
-        .to(eyesRef.current, { scaleY: 0.1, transformOrigin: "center center", duration: 0.12 })
-        .to(eyesRef.current, { scaleY: 1, duration: 0.12 });
-
-      // Antenna pulse
-      gsap.to(antennaRef.current, {
-        scale: 1.25,
-        opacity: 0.7,
-        repeat: -1,
-        yoyo: true,
-        transformOrigin: "center center",
-        duration: 1.2,
-        ease: "sine.inOut",
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
-
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <style>{`
+        @keyframes deskbotFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+        @keyframes deskbotBlink {
+          0%, 90%, 100% { transform: scaleY(1); }
+          95% { transform: scaleY(0.1); }
+        }
+        @keyframes deskbotPulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.3); opacity: 0.6; }
+        }
+        .deskbot-head-group {
+          animation: deskbotFloat 2.6s ease-in-out infinite;
+          transform-origin: center center;
+        }
+        .deskbot-eyes-group {
+          animation: deskbotBlink 3.8s ease-in-out infinite;
+          transform-origin: center 27px;
+        }
+        .deskbot-antenna-beacon {
+          animation: deskbotPulse 1.6s ease-in-out infinite;
+          transform-origin: 24px 6px;
+        }
+      `}</style>
+
       {/* Antenna signal pulse dot */}
-      <circle ref={antennaRef} cx="24" cy="6" r="3" fill="#7ce577" />
+      <circle className="deskbot-antenna-beacon" cx="24" cy="6" r="3" fill="#7ce577" />
       <line x1="24" y1="9" x2="24" y2="15" stroke="#7ce577" strokeWidth="2.5" strokeLinecap="round" />
 
-      {/* Head Group */}
-      <g ref={headRef}>
+      {/* Head Group with gentle bobbing */}
+      <g className="deskbot-head-group">
         {/* Outer Glow */}
         <rect x="6" y="14" width="36" height="28" rx="8" fill="#0e7c5a" fillOpacity="0.4" />
         {/* Face Shield */}
@@ -66,8 +56,8 @@ export function DeskBotLogo({ className = "w-12 h-12" }: { className?: string })
         <rect x="3" y="24" width="4" height="8" rx="2" fill="#7ce577" />
         <rect x="41" y="24" width="4" height="8" rx="2" fill="#7ce577" />
 
-        {/* Eyes Group */}
-        <g ref={eyesRef}>
+        {/* Eyes Group with blink */}
+        <g className="deskbot-eyes-group">
           <circle cx="18" cy="27" r="3.5" fill="#f4ffc7" />
           <circle cx="30" cy="27" r="3.5" fill="#f4ffc7" />
         </g>

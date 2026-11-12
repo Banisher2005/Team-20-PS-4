@@ -3,15 +3,14 @@
 import React, { useState, useRef } from "react";
 import { MeshDriftBackground } from "@/components/background/mesh-drift";
 import { DeskBotLogo } from "@/components/deskbot/deskbot-logo";
-import { gsap } from "gsap";
 
 export function DeskBotUnlock() {
   const [passcode, setPasscode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,50 +27,46 @@ export function DeskBotUnlock() {
       });
 
       if (res.ok) {
-        // Unlock transition using GSAP
-        if (cardRef.current) {
-          gsap.to(cardRef.current, {
-            scale: 0.95,
-            opacity: 0,
-            y: -20,
-            duration: 0.5,
-            ease: "power2.inOut",
-            onComplete: () => {
-              window.location.href = "/";
-            },
-          });
-        } else {
+        setIsUnlocked(true);
+        setTimeout(() => {
           window.location.href = "/";
-        }
+        }, 450);
       } else {
         const data = await res.json().catch(() => ({}));
         setError(data.error ?? "Incorrect passcode. Please try again.");
         setLoading(false);
-
-        // Shake animation on incorrect password
-        if (cardRef.current) {
-          gsap.fromTo(
-            cardRef.current,
-            { x: -10 },
-            { x: 10, duration: 0.08, repeat: 5, yoyo: true, ease: "power1.inOut" }
-          );
-        }
+        setIsShaking(true);
+        setTimeout(() => setIsShaking(false), 500);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication error");
       setLoading(false);
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 500);
     }
   }
 
   return (
     <main className="relative flex min-h-dvh items-center justify-center p-4 overflow-hidden">
-      {/* 5. Exact Mesh Drift WebGL Background */}
+      {/* Exact Mesh Drift WebGL Background */}
       <MeshDriftBackground />
+
+      <style>{`
+        @keyframes unlockShake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-8px); }
+          40%, 80% { transform: translateX(8px); }
+        }
+        .shake-animation {
+          animation: unlockShake 0.4s ease-in-out;
+        }
+      `}</style>
 
       {/* Glassmorphic Unlock Container */}
       <div
-        ref={cardRef}
-        className="w-full max-w-md overflow-hidden rounded-2xl border border-emerald-400/30 bg-[#03120e]/80 backdrop-blur-xl shadow-2xl p-8 text-white relative z-10 transition-all"
+        className={`w-full max-w-md overflow-hidden rounded-2xl border border-emerald-400/30 bg-[#03120e]/80 backdrop-blur-xl shadow-2xl p-8 text-white relative z-10 transition-all duration-500 ${
+          isUnlocked ? "opacity-0 scale-95 -translate-y-4" : "opacity-100 scale-100"
+        } ${isShaking ? "shake-animation" : ""}`}
         style={{
           boxShadow: "0 25px 50px -12px rgba(3, 18, 14, 0.7), 0 0 30px rgba(124, 229, 119, 0.15)",
         }}
@@ -90,7 +85,7 @@ export function DeskBotUnlock() {
         </div>
 
         {/* Form Body */}
-        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-emerald-200 mb-1.5">
               Enter Team Passcode
