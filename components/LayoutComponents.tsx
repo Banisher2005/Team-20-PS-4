@@ -16,6 +16,7 @@ import {
   Shield,
   Check,
 } from "./Icons";
+import { DeskBotLogo } from "@/components/deskbot/deskbot-logo";
 import { hasUnseenUpdates } from "@/lib/seenUpdates";
 
 // ---------------------------------------------------------------- acting user (from /api/user)
@@ -81,7 +82,7 @@ export function AppShell({ title, children }: { title: string; children: React.R
 
   return (
     <ShellContext.Provider value={state}>
-      <div className="flex h-dvh w-full overflow-hidden bg-[#edf4f2] font-sans text-slate-800 antialiased">
+      <div className="flex h-dvh w-full overflow-hidden bg-[#03120e]/60 backdrop-blur-xs font-sans text-slate-800 antialiased">
         {/* Desktop sidebar */}
         <div className="hidden md:flex">
           <Sidebar role={state.actor?.role} />
@@ -135,10 +136,10 @@ export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate
       (href === "/admin" && pathname.startsWith("/admin/tickets"));
 
   return (
-    <aside className="flex w-64 flex-shrink-0 select-none flex-col bg-[#143d3b] text-white">
-      <div className="flex h-16 items-center gap-3 border-b border-[#1c4d4b] px-6">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#276e6a] text-emerald-300 shadow-inner">
-          <Bot className="h-5 w-5" />
+    <aside className="flex w-64 flex-shrink-0 select-none flex-col bg-[#143d3b]/90 backdrop-blur-md text-white border-r border-[#1c4d4b]/60">
+      <div className="flex h-16 items-center gap-3 border-b border-[#1c4d4b]/60 px-6">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#276e6a]/80 text-emerald-300 shadow-inner">
+          <DeskBotLogo className="h-6 w-6" />
         </div>
         <span className="text-xl font-bold tracking-tight">DeskBot</span>
       </div>
@@ -183,7 +184,7 @@ export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate
 export function Header({ title, onMenu }: { title: string; onMenu?: () => void }) {
   const { actor } = useActingUser();
   return (
-    <header className="flex h-16 flex-shrink-0 items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 shadow-2xs sm:px-6">
+    <header className="flex h-16 flex-shrink-0 items-center justify-between gap-2 border-b border-emerald-500/20 bg-white/80 backdrop-blur-md px-3 shadow-2xs sm:px-6">
       <div className="flex min-w-0 items-center gap-2 sm:gap-4">
         <button
           onClick={onMenu}

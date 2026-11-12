@@ -116,7 +116,7 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
   const showSamples = samplePrompts.length > 0 && messages.length <= 1 && !loading;
 
   return (
-    <div className="flex h-[calc(100dvh-7.5rem)] min-h-[460px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xs md:h-[calc(100dvh-9rem)] lg:max-h-[780px]">
+    <div className="flex h-[calc(100dvh-7.5rem)] min-h-[460px] flex-col overflow-hidden rounded-xl border border-emerald-500/20 bg-white/90 backdrop-blur-md shadow-2xs md:h-[calc(100dvh-9rem)] lg:max-h-[780px]">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5 sm:px-5">
         <div className="flex items-center gap-2.5">

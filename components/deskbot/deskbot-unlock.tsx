@@ -1,0 +1,142 @@
+"use client";
+
+import React, { useState, useRef } from "react";
+import { MeshDriftBackground } from "@/components/background/mesh-drift";
+import { DeskBotLogo } from "@/components/deskbot/deskbot-logo";
+import { gsap } from "gsap";
+
+export function DeskBotUnlock() {
+  const [passcode, setPasscode] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!passcode.trim() || loading) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passcode }),
+      });
+
+      if (res.ok) {
+        // Unlock transition using GSAP
+        if (cardRef.current) {
+          gsap.to(cardRef.current, {
+            scale: 0.95,
+            opacity: 0,
+            y: -20,
+            duration: 0.5,
+            ease: "power2.inOut",
+            onComplete: () => {
+              window.location.href = "/";
+            },
+          });
+        } else {
+          window.location.href = "/";
+        }
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error ?? "Incorrect passcode. Please try again.");
+        setLoading(false);
+
+        // Shake animation on incorrect password
+        if (cardRef.current) {
+          gsap.fromTo(
+            cardRef.current,
+            { x: -10 },
+            { x: 10, duration: 0.08, repeat: 5, yoyo: true, ease: "power1.inOut" }
+          );
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Authentication error");
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="relative flex min-h-dvh items-center justify-center p-4 overflow-hidden">
+      {/* 5. Exact Mesh Drift WebGL Background */}
+      <MeshDriftBackground />
+
+      {/* Glassmorphic Unlock Container */}
+      <div
+        ref={cardRef}
+        className="w-full max-w-md overflow-hidden rounded-2xl border border-emerald-400/30 bg-[#03120e]/80 backdrop-blur-xl shadow-2xl p-8 text-white relative z-10 transition-all"
+        style={{
+          boxShadow: "0 25px 50px -12px rgba(3, 18, 14, 0.7), 0 0 30px rgba(124, 229, 119, 0.15)",
+        }}
+      >
+        {/* DeskBot Animated Branding */}
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="p-3 rounded-2xl bg-[#0e7c5a]/30 border border-[#7ce577]/30 shadow-inner mb-3">
+            <DeskBotLogo className="w-14 h-14" />
+          </div>
+          <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+            DeskBot
+          </h1>
+          <p className="text-xs text-emerald-300 font-medium tracking-wide mt-1 uppercase">
+            IT Helpdesk Ticket Agent · Zentrix Software
+          </p>
+        </div>
+
+        {/* Form Body */}
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-emerald-200 mb-1.5">
+              Enter Team Passcode
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                placeholder="Access passcode"
+                autoFocus
+                className="w-full rounded-xl border border-emerald-500/40 bg-[#07241c]/60 px-4 py-3 text-sm text-white placeholder-emerald-400/50 outline-none focus:border-[#7ce577] focus:ring-2 focus:ring-[#7ce577]/30 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-emerald-300 hover:text-white px-2 py-1 rounded transition-colors"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <div className="p-3 text-xs text-red-200 bg-red-950/60 rounded-xl border border-red-500/50">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || !passcode.trim()}
+            className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-[#7ce577] to-[#0e7c5a] text-[#03120e] hover:brightness-110 active:scale-[0.98] disabled:opacity-50 transition-all shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <span className="inline-block animate-pulse">Unlocking DeskBot...</span>
+            ) : (
+              <span>Unlock Dashboard →</span>
+            )}
+          </button>
+
+          <p className="text-[11px] text-center text-emerald-300/60 pt-2 leading-relaxed">
+            Logged-in default: Karthik S (E101). User switching is available on the main dashboard.
+          </p>
+        </form>
+      </div>
+    </main>
+  );
+}

@@ -75,7 +75,7 @@ export function MyTicketsCard({
   const shown = tickets?.slice(0, limit) ?? [];
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xs">
+    <div className="flex flex-col overflow-hidden rounded-xl border border-emerald-500/20 bg-white/90 backdrop-blur-md shadow-2xs">
       <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3.5 sm:px-5">
         <div className="flex items-center gap-2">
           <Ticket className="h-5 w-5 text-emerald-600" />
