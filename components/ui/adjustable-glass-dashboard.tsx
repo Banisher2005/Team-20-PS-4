@@ -97,11 +97,11 @@ export interface GlassWorkspaceProps {
 }
 
 const defaults: GlassSettings = {
-  blur: 22,
-  opacity: 0.3,
-  saturation: 1.2,
-  tint: "#ffffff",
-  edge: 0.6,
+  blur: 32,
+  opacity: 0.79,
+  saturation: 1.15,
+  tint: "#EADBC8",
+  edge: 0.63,
 };
 const tabs = [
   { id: "overview", label: "Overview", icon: Home },
