@@ -5,11 +5,11 @@ import type { AgentResult, AgentStep } from "@/lib/agent/types";
 
 type Message = { role: "user" | "model"; text: string; steps?: AgentStep[] };
 
-// YOUR JOB: change these sample prompts to match your problem statement.
+// The three demo prompts from the PRD (D1–D3).
 const SAMPLE_PROMPTS = [
-  "Add a task to call the vendor tomorrow, then show all my tasks.",
-  "Which tasks are still open?",
-  "Mark the vendor call task as done.",
+  "My VPN keeps disconnecting since morning.",
+  "I clicked a strange link in an email.",
+  "What is the status of my laptop ticket?",
 ];
 
 export default function AgentChat({ onDataChanged }: { onDataChanged?: () => void }) {
@@ -52,10 +52,10 @@ export default function AgentChat({ onDataChanged }: { onDataChanged?: () => voi
   }
 
   return (
-    <div className="flex h-[70vh] flex-col rounded-xl border border-slate-200 bg-white">
+    <div className="flex h-[70vh] min-h-[420px] flex-col rounded-xl border border-slate-200 bg-white">
       <div className="border-b border-slate-200 px-4 py-3">
-        <h2 className="font-semibold">Agent</h2>
-        <p className="text-xs text-slate-500">Ask in plain English. You can see every tool the agent uses.</p>
+        <h2 className="font-semibold">DeskBot chat</h2>
+        <p className="text-xs text-slate-500">Describe your IT problem. You can see every tool DeskBot uses.</p>
       </div>
 
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
@@ -93,7 +93,7 @@ export default function AgentChat({ onDataChanged }: { onDataChanged?: () => voi
           </div>
         ))}
 
-        {loading && <p className="text-sm text-slate-500">Agent is working...</p>}
+        {loading && <p className="text-sm text-slate-500">DeskBot is working...</p>}
         {error && <p className="text-sm text-red-600">{error}</p>}
         <div ref={bottomRef} />
       </div>
@@ -108,8 +108,8 @@ export default function AgentChat({ onDataChanged }: { onDataChanged?: () => voi
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your request..."
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+          placeholder="Describe your IT problem..."
+          className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
         />
         <button
           type="submit"
