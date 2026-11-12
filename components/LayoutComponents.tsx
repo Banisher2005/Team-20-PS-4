@@ -18,7 +18,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "./Icons";
-import { DeskBotLogo } from "@/components/deskbot/deskbot-logo";
+import Image from "next/image";
 import { ThemeToggle } from "./ThemeToggle";
 import { hasUnseenUpdates } from "@/lib/seenUpdates";
 
@@ -195,10 +195,32 @@ export function Sidebar({
       }`}
     >
       <div className={`flex h-16 items-center gap-3 border-b border-edge/15 ${collapsed ? "justify-center px-0" : "px-6"}`}>
-        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#276e6a]/80 text-mute shadow-inner">
-          <DeskBotLogo className="h-6 w-6" />
-        </div>
-        {!collapsed && <span className="whitespace-nowrap text-xl font-bold tracking-tight">DeskBot</span>}
+        {/* Transparent logo in two colourways; globals.css shows the one matching data-theme. */}
+        {(["light", "dark"] as const).map((theme) =>
+          collapsed ? (
+            <Image
+              key={`icon-${theme}`}
+              src={`/deskbot-icon-${theme}.png`}
+              unoptimized
+              alt="DeskBot"
+              width={40}
+              height={40}
+              className={`theme-${theme}-only h-10 w-10 flex-shrink-0`}
+              priority
+            />
+          ) : (
+            <Image
+              key={`wordmark-${theme}`}
+              src={`/deskbot-wordmark-${theme}.png`}
+              unoptimized
+              alt="DeskBot"
+              width={162}
+              height={48}
+              className={`theme-${theme}-only h-11 w-auto flex-shrink-0`}
+              priority
+            />
+          )
+        )}
       </div>
 
       <nav className={`flex-1 space-y-1.5 py-6 ${collapsed ? "px-3" : "px-4"}`}>

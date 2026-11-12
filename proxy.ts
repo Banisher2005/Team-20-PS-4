@@ -39,5 +39,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!login|api/login|api/health|_next/static|_next/image|favicon.ico).*)"],
+  // deskbot-*.png: public logo images in /public, needed on the login page before there is a session.
+  matcher: ["/((?!login|api/login|api/health|_next/static|_next/image|favicon.ico|deskbot-[a-z-]+\\.png$).*)"],
 };

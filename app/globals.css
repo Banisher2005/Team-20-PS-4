@@ -232,3 +232,7 @@ body {
     transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease !important;
   }
 }
+
+/* ---- Theme-specific images (e.g. the DeskBot logo): show one, hide the other ---- */
+:root[data-theme="dark"] .theme-light-only { display: none; }
+:root:not([data-theme="dark"]) .theme-dark-only { display: none; }

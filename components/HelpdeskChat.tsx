@@ -1,6 +1,7 @@
 "use client";
 
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import Image from "next/image";
 import { Bot, Send, CheckCircle2 } from "./Icons";
 import type { AgentResult, AgentStep } from "@/lib/agent/types";
 import { PriorityBadge } from "./Badges";
@@ -116,13 +117,19 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
   const showSamples = samplePrompts.length > 0 && messages.length <= 1 && !loading;
 
   return (
-    <div className="gw-chat flex h-[calc(100dvh-7.5rem)] min-h-[460px] flex-col overflow-hidden rounded-xl border shadow-2xs md:h-[calc(100dvh-9rem)] lg:max-h-[780px]">
+    <div className="gw-chat flex h-[calc(100dvh-7.5rem)] min-h-[460px] flex-col overflow-hidden rounded-none border shadow-2xs md:h-[calc(100dvh-9rem)] lg:max-h-[780px]">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-box-line px-4 py-3.5 sm:px-5">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-6 w-6 items-center justify-center rounded bg-[#276e6a] text-mute">
-            <Bot className="h-4 w-4" />
-          </div>
+          <Image
+            src="/deskbot-avatar.png"
+            unoptimized
+            alt="DeskBot"
+            width={28}
+            height={28}
+            className="h-7 w-7 rounded border border-box-line"
+            priority
+          />
           <h2 className="text-base font-bold tracking-tight text-ink">{title}</h2>
         </div>
         {messages.length > 1 && (
@@ -150,9 +157,14 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
               </div>
             ) : (
               <div className="flex w-full max-w-[96%] items-start gap-2 sm:max-w-[90%] sm:gap-3">
-                <div className="mt-0.5 hidden h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#276e6a] text-mute shadow-2xs sm:flex">
-                  <Bot className="h-5 w-5" />
-                </div>
+                <Image
+                  src="/deskbot-avatar.png"
+                  unoptimized
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="mt-0.5 hidden h-8 w-8 flex-shrink-0 rounded-lg shadow-2xs sm:block"
+                />
                 <div className="min-w-0 flex-1 space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-ink">DeskBot</span>

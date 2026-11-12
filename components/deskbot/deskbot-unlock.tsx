@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { MeshDriftBackground } from "@/components/background/mesh-drift";
-import { DeskBotLogo } from "@/components/deskbot/deskbot-logo";
+import Image from "next/image";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function DeskBotUnlock() {
@@ -78,11 +78,20 @@ export function DeskBotUnlock() {
       >
         {/* DeskBot Animated Branding */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="p-3 rounded-2xl bg-tint/30 border border-accent/30 shadow-inner mb-3">
-            <DeskBotLogo className="w-14 h-14" />
-          </div>
-          <h1 className="text-2xl font-black tracking-tight text-ink flex items-center gap-2">
-            DeskBot
+          {/* Transparent logo in two colourways; globals.css shows the one matching data-theme. */}
+          <h1 className="mb-1">
+            {(["light", "dark"] as const).map((theme) => (
+              <Image
+                key={theme}
+                src={`/deskbot-wordmark-${theme}.png`}
+                unoptimized
+                alt="DeskBot"
+                width={237}
+                height={70}
+                className={`theme-${theme}-only h-[70px] w-auto`}
+                priority
+              />
+            ))}
           </h1>
           <p className="text-xs text-mute font-medium tracking-wide mt-1 uppercase">
             IT Helpdesk Ticket Agent · Zentrix Software

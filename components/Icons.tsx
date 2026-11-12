@@ -175,6 +175,15 @@ export function Menu({ className }: { className?: string }) {
   );
 }
 
+export function Search({ className }: { className?: string }) {
+  return (
+    <svg className={className} {...svgProps}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </svg>
+  );
+}
+
 export function X({ className }: { className?: string }) {
   return (
     <svg className={className} {...svgProps}>
