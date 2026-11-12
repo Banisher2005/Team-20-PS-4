@@ -1,26 +1,36 @@
 import { statusLabel } from "@/lib/helpdesk";
 
 const PRIORITY_STYLES: Record<string, string> = {
-  P1: "bg-red-100 text-red-800 ring-red-200",
-  P2: "bg-orange-100 text-orange-800 ring-orange-200",
-  P3: "bg-yellow-100 text-yellow-800 ring-yellow-200",
-  P4: "bg-slate-100 text-slate-700 ring-slate-200",
+  P1: "bg-red-100 text-red-700 ring-red-300 font-bold",
+  P2: "bg-amber-100 text-amber-800 ring-amber-300 font-bold",
+  P3: "bg-yellow-100 text-yellow-800 ring-yellow-300 font-semibold",
+  P4: "bg-slate-100 text-slate-700 ring-slate-300 font-medium",
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  open: "bg-blue-100 text-blue-800 ring-blue-200",
-  in_progress: "bg-amber-100 text-amber-800 ring-amber-200",
-  waiting_for_user: "bg-purple-100 text-purple-800 ring-purple-200",
-  resolved: "bg-green-100 text-green-800 ring-green-200",
-  closed: "bg-slate-100 text-slate-600 ring-slate-200",
+  open: "bg-emerald-50 text-emerald-800 ring-emerald-300",
+  in_progress: "bg-emerald-50 text-emerald-800 ring-emerald-300",
+  waiting_for_user: "bg-purple-50 text-purple-800 ring-purple-300",
+  resolved: "bg-emerald-100 text-emerald-800 ring-emerald-400",
+  closed: "bg-slate-100 text-slate-700 ring-slate-300",
 };
 
-const base = "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset whitespace-nowrap";
+const base = "inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset whitespace-nowrap";
 
 export function PriorityBadge({ priority }: { priority: string }) {
-  return <span className={`${base} ${PRIORITY_STYLES[priority] ?? PRIORITY_STYLES.P4}`}>{priority}</span>;
+  const p = priority.toUpperCase();
+  return (
+    <span className={`inline-flex items-center justify-center rounded px-2 py-0.5 text-xs ring-1 ring-inset whitespace-nowrap ${PRIORITY_STYLES[p] ?? PRIORITY_STYLES.P4}`}>
+      {p}
+    </span>
+  );
 }
 
 export function StatusBadge({ status }: { status: string }) {
-  return <span className={`${base} ${STATUS_STYLES[status] ?? STATUS_STYLES.closed}`}>{statusLabel(status)}</span>;
+  const s = status.toLowerCase();
+  return (
+    <span className={`${base} ${STATUS_STYLES[s] ?? STATUS_STYLES.closed}`}>
+      {statusLabel(status)}
+    </span>
+  );
 }
