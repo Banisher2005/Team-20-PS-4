@@ -191,7 +191,7 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
 
         {showSamples && (
           <div className="space-y-2 pl-0 sm:pl-11">
-            <p className="text-xs font-semibold text-slate-500">Try one of these:</p>
+            <p className="text-xs font-semibold text-mute2">Try one of these:</p>
             <div className="flex flex-col gap-2">
               {samplePrompts.map((p) => (
                 <button
@@ -252,13 +252,13 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
 function ToolSteps({ steps }: { steps: AgentStep[] }) {
   return (
     <div className="space-y-1 rounded-lg border border-box-line bg-box p-2 text-xs text-mute2/80">
-      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Tools used</div>
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-mute2">Tools used</div>
       {steps.map((s, i) => (
         <details key={i} className="group">
           <summary className="flex cursor-pointer select-none list-none items-center gap-1.5 font-mono text-[11px]">
-            <span className={s.ok ? "text-emerald-600" : "text-red-500"}>▸</span>
-            <span className="font-semibold text-slate-700">{s.tool}</span>
-            <span className="text-slate-400">({s.ok ? "success" : "failed"})</span>
+            <span className={s.ok ? "text-accent" : "text-danger"}>▸</span>
+            <span className="font-semibold text-ink">{s.tool}</span>
+            <span className={s.ok ? "text-accent" : "text-danger"}>({s.ok ? "success" : "failed"})</span>
             {s.writes && <span className="rounded bg-amber-100 px-1 text-[10px] text-amber-800">writes data</span>}
           </summary>
           <pre className="mt-1 max-h-48 overflow-auto whitespace-pre-wrap break-words rounded bg-box p-2 text-[11px] text-mute2">
@@ -299,7 +299,7 @@ function FormattedBotMessage({ text, steps }: { text: string; steps?: AgentStep[
               <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded bg-[#86efac] text-xs font-bold text-slate-900 shadow-2xs">
                 {step[1]}
               </span>
-              <span className="text-sm font-medium text-slate-800">
+              <span className="text-sm font-medium text-ink">
                 <Inline text={step[2]} />
               </span>
             </div>
