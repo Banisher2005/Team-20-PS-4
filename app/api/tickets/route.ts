@@ -1,21 +1,16 @@
 import { NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
-import { CURRENT_USER_ID } from "@/lib/currentUser";
+import { errorResponse, requireActor } from "@/lib/http";
+import { listMyTickets } from "@/lib/tickets";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** GET /api/tickets -> the logged-in user's tickets, newest first (max 50). */
+/** GET /api/tickets -> the logged-in employee's tickets, newest first (max 50), with unread IT replies. */
 export async function GET() {
-  const { data, error } = await getSupabase()
-    .from("tickets")
-    .select("*, support_teams(name)")
-    .eq("employee_id", CURRENT_USER_ID)
-    .order("created_at", { ascending: false })
-    .limit(50);
-  if (error) {
-    console.error("[tickets]", error.message);
-    return NextResponse.json({ error: "Could not load tickets" }, { status: 500 });
+  try {
+    const actor = await requireActor("employee");
+    return NextResponse.json({ tickets: await listMyTickets(actor, 50) });
+  } catch (err) {
+    return errorResponse(err, "tickets");
   }
-  return NextResponse.json({ tickets: data });
 }

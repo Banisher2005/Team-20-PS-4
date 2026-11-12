@@ -1,52 +1,45 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getSupabase } from "@/lib/supabase";
+import { errorResponse, requireActor } from "@/lib/http";
+import { getQueue, updateTicket } from "@/lib/tickets";
 import { statusSchema } from "@/lib/helpdesk";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /*
- * IT Admin board API (stretch, PRD §9.3).
- * GET   /api/admin/tickets -> all tickets with employee + team name
- * PATCH /api/admin/tickets body: { id: number, status } -> IT staff can set any status
+ * IT admin console API. proxy.ts already blocks non-admins; requireActor("admin") checks again.
+ * GET   /api/admin/tickets -> all tickets with employee, team and SLA
+ * PATCH /api/admin/tickets body: { id, status?, note? } -> manual resolution; note is shown to the employee
  */
 
 export async function GET() {
-  const { data, error } = await getSupabase()
-    .from("tickets")
-    .select("id, title, category, priority, status, team_id, created_at, updated_at, support_teams(name), employees(name)")
-    .order("created_at", { ascending: false })
-    .limit(200);
-  if (error) {
-    console.error("[admin/tickets]", error.message);
-    return NextResponse.json({ error: "Could not load tickets" }, { status: 500 });
+  try {
+    const actor = await requireActor("admin");
+    return NextResponse.json({ tickets: await getQueue(actor) });
+  } catch (err) {
+    return errorResponse(err, "admin/tickets");
   }
-  return NextResponse.json({ tickets: data });
 }
 
-const patchSchema = z.object({
-  id: z.number().int().positive(),
-  status: statusSchema,
-});
+const patchSchema = z
+  .object({
+    id: z.number().int().positive(),
+    status: statusSchema.optional(),
+    note: z.string().trim().max(1000).optional(),
+  })
+  .refine((v) => v.status !== undefined || (v.note ?? "").length > 0, "Nothing to update");
 
 export async function PATCH(request: Request) {
-  const body = await request.json().catch(() => null);
-  const parsed = patchSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid update", details: parsed.error.issues }, { status: 400 });
+  try {
+    const actor = await requireActor("admin");
+    const parsed = patchSchema.safeParse(await request.json().catch(() => null));
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Choose a status or write a note." }, { status: 400 });
+    }
+    const { id, status, note } = parsed.data;
+    return NextResponse.json({ result: await updateTicket(actor, id, { status, note }) });
+  } catch (err) {
+    return errorResponse(err, "admin/tickets PATCH");
   }
-  const { id, status } = parsed.data;
-  const { data, error } = await getSupabase()
-    .from("tickets")
-    .update({ status, updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .select("id, status, updated_at")
-    .maybeSingle();
-  if (error) {
-    console.error("[admin/tickets PATCH]", error.message);
-    return NextResponse.json({ error: "Could not update ticket" }, { status: 500 });
-  }
-  if (!data) return NextResponse.json({ error: `Ticket #${id} not found` }, { status: 404 });
-  return NextResponse.json({ ticket: data });
 }

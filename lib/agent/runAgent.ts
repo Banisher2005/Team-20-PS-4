@@ -3,13 +3,23 @@ import type { Content, Part } from "@google/genai";
 import { getGemini } from "../gemini";
 import { GEMINI_MODEL } from "../env";
 import type { ChatMessage } from "../schemas";
-import { tools } from "./tools";
-import { toFunctionDeclarations } from "./defineTool";
+import type { Actor } from "../actorShared";
+import { employeeTools } from "./tools";
+import { adminTools } from "./adminTools";
+import { toFunctionDeclarations, type AgentTool } from "./defineTool";
 import { buildSystemPrompt } from "./systemPrompt";
 import type { AgentResult, AgentStep } from "./types";
 
 /** Stops the agent from looping forever and using up your Gemini quota. */
 const MAX_ROUNDS = 8;
+
+/** Tool results bigger than this are cut before going back to Gemini (protects tokens/quota). */
+const MAX_RESULT_CHARS = 8000;
+
+function capResult(result: unknown): unknown {
+  const json = JSON.stringify(result ?? null);
+  return json.length <= MAX_RESULT_CHARS ? result : { truncated: true, preview: json.slice(0, MAX_RESULT_CHARS) };
+}
 
 /**
  * THE AGENT LOOP
@@ -18,10 +28,13 @@ const MAX_ROUNDS = 8;
  * 3. Send the results back to Gemini.
  * 4. Repeat until Gemini gives a final text answer (or MAX_ROUNDS is reached).
  */
-export async function runAgent(messages: ChatMessage[]): Promise<AgentResult> {
+export async function runAgent(messages: ChatMessage[], actor: Actor): Promise<AgentResult> {
   const ai = getGemini();
   const steps: AgentStep[] = [];
+  // Employees and the IT admin get different tools. The role comes from the server (acting-user cookie).
+  const tools = actor.role === "admin" ? adminTools : employeeTools;
   const functionDeclarations = toFunctionDeclarations(tools);
+  const systemInstruction = buildSystemPrompt(actor);
 
   const contents: Content[] = messages.map((m) => ({
     role: m.role,
@@ -34,7 +47,7 @@ export async function runAgent(messages: ChatMessage[]): Promise<AgentResult> {
         model,
         contents,
         config: {
-          systemInstruction: buildSystemPrompt(),
+          systemInstruction,
           tools: [{ functionDeclarations }],
           temperature: 0.2,
         },
@@ -54,7 +67,7 @@ export async function runAgent(messages: ChatMessage[]): Promise<AgentResult> {
 
     const responseParts: Part[] = [];
     for (const call of calls) {
-      const step = await runTool(call.name ?? "", call.args ?? {});
+      const step = await runTool(tools, actor, call.name ?? "", call.args ?? {});
       steps.push(step);
       responseParts.push({
         functionResponse: {
@@ -98,7 +111,7 @@ async function withRetry<T>(call: (model: string) => Promise<T>): Promise<T> {
   throw lastError;
 }
 
-async function runTool(name: string, rawArgs: unknown): Promise<AgentStep> {
+async function runTool(tools: AgentTool[], actor: Actor, name: string, rawArgs: unknown): Promise<AgentStep> {
   const tool = tools.find((t) => t.name === name);
   if (!tool) {
     return { tool: name, args: rawArgs, ok: false, writes: false, error: `Unknown tool: ${name}` };
@@ -112,7 +125,7 @@ async function runTool(name: string, rawArgs: unknown): Promise<AgentStep> {
   }
 
   try {
-    const result = await tool.run(parsed.data);
+    const result = capResult(await tool.run(parsed.data, { actor }));
     return { tool: name, args: parsed.data, ok: true, writes: tool.writes, result };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Tool failed";

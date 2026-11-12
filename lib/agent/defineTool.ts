@@ -1,6 +1,10 @@
 import "server-only";
 import { z } from "zod";
 import type { FunctionDeclaration } from "@google/genai";
+import type { Actor } from "../actorShared";
+
+/** Server-side context for a tool call. The actor comes from the server (acting-user cookie), never from Gemini. */
+export type ToolContext = { actor: Actor };
 
 /**
  * One agent tool = a name + a description + a Zod schema for its arguments + the code it runs.
@@ -12,7 +16,7 @@ export type AgentTool = {
   description: string;
   schema: z.ZodObject;
   writes: boolean;
-  run: (args: unknown) => Promise<unknown>;
+  run: (args: unknown, ctx: ToolContext) => Promise<unknown>;
 };
 
 export function defineTool<S extends z.ZodObject>(tool: {
@@ -21,14 +25,14 @@ export function defineTool<S extends z.ZodObject>(tool: {
   schema: S;
   /** true if this tool inserts, updates or deletes data */
   writes?: boolean;
-  run: (args: z.infer<S>) => Promise<unknown>;
+  run: (args: z.infer<S>, ctx: ToolContext) => Promise<unknown>;
 }): AgentTool {
   return {
     name: tool.name,
     description: tool.description,
     schema: tool.schema,
     writes: tool.writes ?? false,
-    run: (args) => tool.run(args as z.infer<S>),
+    run: (args, ctx) => tool.run(args as z.infer<S>, ctx),
   };
 }
 
