@@ -1,23 +1,7 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 import { MeshDriftBackground } from "@/components/background/mesh-drift";
 import { DEFAULT_THEME, THEME_INIT_SCRIPT } from "@/lib/theme";
-
-// Self-hosted by next/font (no layout shift, no external request at runtime).
-// globals.css maps these onto Tailwind's font-sans / font-mono.
-const plexSans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-plex-sans",
-  display: "swap",
-});
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-plex-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "DeskBot · IT Helpdesk",
@@ -31,7 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       data-theme={DEFAULT_THEME}
-      className={`${plexSans.variable} ${plexMono.variable}`}
       suppressHydrationWarning
     >
       <head>

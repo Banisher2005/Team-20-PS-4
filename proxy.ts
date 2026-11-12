@@ -21,7 +21,7 @@ export async function proxy(request: NextRequest) {
 
   const ok = await isValidSession(request.cookies.get(SESSION_COOKIE)?.value);
   if (!ok) {
-    return isApi ? NextResponse.json({ error: "Not logged in" }, { status: 401 }) : redirect("/login");
+    return isApi ? NextResponse.json({ error: "Not logged in" }, { status: 401 }) : redirect("/landing");
   }
 
   const isAdmin = request.cookies.get(ACTING_USER_COOKIE)?.value === ADMIN_ID;
@@ -39,6 +39,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // deskbot-*.png: public logo images in /public, needed on the login page before there is a session.
-  matcher: ["/((?!login|api/login|api/health|_next/static|_next/image|favicon.ico|deskbot-[a-z-]+\\.png$).*)"],
+  // deskbot-*.png and images/: public assets needed on the landing and login pages before session.
+  matcher: ["/((?!landing|login|api/login|api/health|images|_next/static|_next/image|favicon.ico|deskbot-[a-z-]+\\.png$).*)"],
 };

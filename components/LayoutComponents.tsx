@@ -48,7 +48,7 @@ export function useActingUser(): ShellState {
 
 async function logout() {
   await fetch("/api/logout", { method: "POST" });
-  window.location.href = "/login";
+  window.location.href = "/landing";
 }
 
 async function switchUser(userId: string) {
