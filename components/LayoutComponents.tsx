@@ -290,6 +290,19 @@ export function Header({
         >
           <Menu className="h-5 w-5" />
         </button>
+        <Link href="/" className="flex items-center md:hidden">
+          {(["light", "dark"] as const).map((theme) => (
+            <Image
+              key={theme}
+              src={`/deskbot-wordmark-${theme}.png`}
+              unoptimized
+              alt="DeskBot"
+              width={108}
+              height={32}
+              className={`theme-${theme}-only h-8 w-auto`}
+            />
+          ))}
+        </Link>
         {/* Desktop: collapse / expand the sidebar */}
         {onToggleSidebar && (
           <button

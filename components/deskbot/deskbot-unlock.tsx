@@ -76,7 +76,7 @@ export function DeskBotUnlock() {
           boxShadow: "0 25px 50px -12px rgba(3, 18, 14, 0.7), 0 0 30px rgba(124, 229, 119, 0.15)",
         }}
       >
-        {/* DeskBot Animated Branding */}
+        {/* DeskBot Branding */}
         <div className="flex flex-col items-center text-center mb-6">
           {/* Transparent logo in two colourways; globals.css shows the one matching data-theme. */}
           <h1 className="mb-1">
