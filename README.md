@@ -46,5 +46,5 @@ DeskBot helps Zentrix Software employees get known IT fixes quickly and route un
 
 - Abhinav Kumar
 - Megha Kadiyala
-- Kaushik Narayan
 - Atharv Nitin Patil
+- Kaushik Narayan
