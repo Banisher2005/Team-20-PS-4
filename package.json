@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "node --env-file=.env.local scripts/e2e.mjs"
   },
   "dependencies": {
     "@google/genai": "^3.0.0",

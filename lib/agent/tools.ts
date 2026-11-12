@@ -136,11 +136,12 @@ const updateTicket = defineTool({
   description:
     "Use this when the user wants to close, reopen, or add more details to one of their own tickets. " +
     "Needs the numeric ticket id (call getMyTickets first if unknown). Extra details are added to the ticket for IT. " +
-    "Allowed: open/in_progress/waiting_for_user -> closed; waiting_for_user -> open; resolved -> closed; resolved/closed -> open (reopen).",
+    "Always pass EXACTLY the status the user asked for, even if you think it is not allowed: the system checks the rules " +
+    "and returns an error you can explain. Never substitute a different status.",
   writes: true,
   schema: z.object({
     ticketId: ticketIdSchema,
-    status: statusSchema.optional().describe("New status, only if the user wants to change it"),
+    status: statusSchema.optional().describe("The exact new status the user asked for, only if they want to change it"),
     extraInfo: z.string().trim().max(500).optional().describe("Extra details for IT, added to the ticket"),
   }),
   run: ({ ticketId, status, extraInfo }, { actor }) => tickets.updateTicket(actor, ticketId, { status, note: extraInfo }),

@@ -1,5 +1,7 @@
 # PRD v3 — DeskBot: IT Helpdesk Ticket Agent (PS4)
 
+> **v2 note (12 Nov 2026):** the shipped app replaces the fixed `CURRENT_USER_ID` with a demo **Switch user** menu (E101–E115 + IT Helpdesk Admin, still behind `APP_PASSCODE`), adds an IT admin console that resolves tickets manually, and stores IT/employee notes in `tickets.description` (`[IT update …]` / `[Update …]`). No schema changes. See README.md.
+
 | Field | Value |
 |---|---|
 | **Problem** | PS4 · IT Helpdesk Ticket Agent |
