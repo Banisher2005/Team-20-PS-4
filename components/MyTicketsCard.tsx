@@ -79,7 +79,7 @@ export function MyTicketsCard({
       <div className="flex items-center justify-between gap-2 border-b border-[rgba(124,229,119,0.15)] px-4 py-3.5 sm:px-5">
         <div className="flex items-center gap-2">
           <Ticket className="h-5 w-5 text-[#7ce577]" />
-          <h2 className="text-base font-bold tracking-tight text-[#f4ffc7]">{title}</h2>
+          <h2 className="text-base font-bold tracking-tight text-white">{title}</h2>
           {tickets && <span className="text-xs font-semibold text-emerald-300/60">({tickets.length})</span>}
         </div>
         <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-300/60">
@@ -108,7 +108,7 @@ export function MyTicketsCard({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-xs font-bold text-[#7ce577]">#{t.id}</span>
-                    <span className="truncate text-sm font-semibold text-[#f4ffc7]">{t.title}</span>
+                    <span className="truncate text-sm font-semibold text-white">{t.title}</span>
                     {unseen && (
                       <span className="h-2 w-2 flex-shrink-0 rounded-full bg-emerald-500" title="New update from IT" />
                     )}
@@ -140,7 +140,7 @@ export function MyTicketsCard({
         <div className="border-t border-[rgba(124,229,119,0.15)] bg-[rgba(3,18,14,0.2)] px-5 py-3 text-center">
           <Link
             href="/tickets"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7ce577] transition-colors hover:text-[#f4ffc7]"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7ce577] transition-colors hover:text-white"
           >
             <span>View all tickets</span>
             <ArrowRight className="h-3.5 w-3.5" />

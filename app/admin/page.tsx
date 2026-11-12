@@ -98,7 +98,7 @@ function AdminQueue() {
     );
   }, [rows, tab, team, priority, status]);
 
-  const select = "rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-2 py-1.5 text-sm text-[#f4ffc7]";
+  const select = "rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-2 py-1.5 text-sm text-white";
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-4 lg:space-y-5">
@@ -117,7 +117,7 @@ function AdminQueue() {
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                 tab === t.id
                   ? "bg-[#7ce577] text-slate-900"
-                  : "text-emerald-200/70 hover:bg-[rgba(124,229,119,0.1)] hover:text-[#f4ffc7]"
+                  : "text-emerald-200/70 hover:bg-[rgba(124,229,119,0.1)] hover:text-white"
               }`}
             >
               {t.label} <span className="opacity-60">({counts[t.id]})</span>
@@ -127,23 +127,23 @@ function AdminQueue() {
 
         <div className="flex flex-wrap items-center gap-2 border-b border-[rgba(124,229,119,0.15)] p-3">
           <select value={team} onChange={(e) => setTeam(e.target.value)} className={select} aria-label="Team">
-            <option value="" className="bg-[#031813] text-[#f4ffc7]">All teams</option>
+            <option value="" className="bg-[#031813] text-white">All teams</option>
             {TEAMS.map(([id, name]) => (
-              <option key={id} value={id} className="bg-[#031813] text-[#f4ffc7]">
+              <option key={id} value={id} className="bg-[#031813] text-white">
                 {name}
               </option>
             ))}
           </select>
           <select value={priority} onChange={(e) => setPriority(e.target.value)} className={select} aria-label="Priority">
-            <option value="" className="bg-[#031813] text-[#f4ffc7]">All priorities</option>
+            <option value="" className="bg-[#031813] text-white">All priorities</option>
             {PRIORITIES.map((p) => (
-              <option key={p} className="bg-[#031813] text-[#f4ffc7]">{p}</option>
+              <option key={p} className="bg-[#031813] text-white">{p}</option>
             ))}
           </select>
           <select value={status} onChange={(e) => setStatus(e.target.value)} className={select} aria-label="Status">
-            <option value="" className="bg-[#031813] text-[#f4ffc7]">All statuses</option>
+            <option value="" className="bg-[#031813] text-white">All statuses</option>
             {STATUSES.map((s) => (
-              <option key={s} value={s} className="bg-[#031813] text-[#f4ffc7]">
+              <option key={s} value={s} className="bg-[#031813] text-white">
                 {statusLabel(s)}
               </option>
             ))}
@@ -161,7 +161,7 @@ function AdminQueue() {
             <li key={t.id}>
               <Link href={`/admin/tickets/${t.id}`} className="block p-3 hover:bg-[rgba(124,229,119,0.08)]">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="min-w-0 text-sm font-semibold text-[#f4ffc7]">
+                  <p className="min-w-0 text-sm font-semibold text-white">
                     <span className="mr-1 font-mono text-xs text-[#7ce577]">#{t.id}</span>
                     {t.title}
                   </p>
@@ -203,7 +203,7 @@ function AdminQueue() {
                 >
                   <td className="px-3 py-2.5 font-mono text-xs font-bold text-[#7ce577]">{t.id}</td>
                   <td className="px-3 py-2.5">
-                    <Link href={`/admin/tickets/${t.id}`} className="font-semibold text-[#f4ffc7] hover:underline">
+                    <Link href={`/admin/tickets/${t.id}`} className="font-semibold text-white hover:underline">
                       {t.title}
                     </Link>
                     <p className="text-xs text-emerald-300/60">
@@ -212,7 +212,7 @@ function AdminQueue() {
                     </p>
                   </td>
                   <td className="px-3 py-2.5">
-                    <span className="font-medium text-[#f4ffc7]">{t.employee}</span>
+                    <span className="font-medium text-white">{t.employee}</span>
                     <span className="block font-mono text-[11px] text-emerald-300/50">{t.employee_id}</span>
                   </td>
                   <td className="px-3 py-2.5 text-emerald-200/80">{t.team}</td>

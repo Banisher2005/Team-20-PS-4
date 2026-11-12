@@ -91,7 +91,7 @@ function AdminTicket() {
         <BackLink />
         <TicketHeaderCard ticket={ticket} showEmployee />
         <section className="gw-panel rounded-xl border p-4 shadow-2xs sm:p-5">
-          <h3 className="mb-4 text-sm font-bold text-[#f4ffc7]">Conversation</h3>
+          <h3 className="mb-4 text-sm font-bold text-white">Conversation</h3>
           <TicketTimeline
             description={ticket.description}
             updates={ticket.updates}
@@ -104,7 +104,7 @@ function AdminTicket() {
 
       <aside className="space-y-4 lg:col-span-2 lg:pt-9">
         <section className="gw-panel space-y-3 rounded-xl border p-4 shadow-2xs sm:p-5">
-          <h3 className="text-sm font-bold text-[#f4ffc7]">Resolve this ticket</h3>
+          <h3 className="text-sm font-bold text-white">Resolve this ticket</h3>
 
           <label className="block text-xs font-semibold text-emerald-200/80" htmlFor="status">
             Status
@@ -113,10 +113,10 @@ function AdminTicket() {
             id="status"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="w-full rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-3 py-2 text-sm text-[#f4ffc7]"
+            className="w-full rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-3 py-2 text-sm text-white"
           >
             {STATUSES.map((s) => (
-              <option key={s} value={s} className="bg-[#031813] text-[#f4ffc7]">
+              <option key={s} value={s} className="bg-[#031813] text-white">
                 {statusLabel(s)}
               </option>
             ))}
@@ -132,7 +132,7 @@ function AdminTicket() {
             rows={4}
             maxLength={1000}
             placeholder="e.g. We replaced the VPN profile. Please restart the VPN app and try again."
-            className="w-full rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-3 py-2 text-sm text-[#f4ffc7] placeholder-emerald-200/50 focus:border-emerald-500 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+            className="w-full rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-3 py-2 text-sm text-white placeholder-emerald-200/50 focus:border-emerald-500 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
           />
 
           <button
@@ -204,7 +204,7 @@ function Quick({
       onClick={onClick}
       disabled={disabled}
       title={title}
-      className="rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(14,124,90,0.2)] px-3 py-1.5 text-xs font-semibold text-[#f4ffc7] hover:bg-[rgba(14,124,90,0.35)] disabled:opacity-40"
+      className="rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(14,124,90,0.2)] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[rgba(14,124,90,0.35)] disabled:opacity-40"
     >
       {children}
     </button>

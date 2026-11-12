@@ -7,22 +7,22 @@
    ============================================================ */
 
 :root {
-  /* Glass material knobs — tweak here to adjust the whole UI */
-  --gw-blur: 22px;
-  --gw-opacity: 0.28;
-  --gw-saturation: 1.35;
+  /* Glass material knobs */
+  --gw-blur: 28px;
+  --gw-opacity: 0.82;
+  --gw-saturation: 1.25;
 
-  /* Deep translucent teal tint — #0E7C5A as R G B */
-  --gw-tint-rgb: 14, 124, 90;
+  /* Navbar colour behind the card with a little transparency — #031612 / rgb(3, 22, 18) */
+  --gw-tint-rgb: 3, 22, 18;
 
-  /* Edge highlight — #7CE577 (green) at low opacity */
-  --gw-edge: rgba(124, 229, 119, 0.18);
+  /* Edge highlight */
+  --gw-edge: rgba(124, 229, 119, 0.22);
 
   /* Heavier glass for sidebar */
-  --gw-sidebar-opacity: 0.55;
+  --gw-sidebar-opacity: 0.90;
 
   /* Header opacity */
-  --gw-header-opacity: 0.18;
+  --gw-header-opacity: 0.85;
 }
 
 /* ---- Base glass surface ---- */
@@ -77,24 +77,24 @@
   background: transparent;
 }
 
-/* Fallback: browsers that don't support backdrop-filter get a solid teal */
+/* Fallback: browsers that don't support backdrop-filter get a solid dark teal */
 @supports not (backdrop-filter: blur(1px)) {
   .gw-glass,
   .gw-panel {
-    background: rgba(14, 60, 46, 0.92);
+    background: rgba(3, 22, 18, 0.95);
   }
   .gw-sidebar {
     background: rgba(3, 22, 18, 0.95);
   }
   .gw-header {
-    background: rgba(14, 60, 46, 0.88);
+    background: rgba(3, 22, 18, 0.92);
   }
 }
 
 /* ---- Text legibility on glass ---- */
-.gw-text-primary   { color: #f4ffc7; }
-.gw-text-secondary { color: rgba(244, 255, 199, 0.65); }
-.gw-text-muted     { color: rgba(244, 255, 199, 0.4); }
+.gw-text-primary   { color: #ffffff; }
+.gw-text-secondary { color: rgba(255, 255, 255, 0.85); }
+.gw-text-muted     { color: rgba(255, 255, 255, 0.6); }
 
 /* ---- Scrollbar styling for glass areas ---- */
 .gw-scroll::-webkit-scrollbar { width: 5px; }

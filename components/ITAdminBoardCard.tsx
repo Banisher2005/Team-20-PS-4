@@ -67,7 +67,7 @@ export function ITAdminBoardCard({
     <div className="gw-panel flex flex-col overflow-hidden rounded-xl border shadow-2xs">
       <div className="flex items-center gap-2 border-b border-[rgba(124,229,119,0.15)] px-4 py-3.5 sm:px-5">
         <BarChart3 className="h-5 w-5 text-[#7ce577]" />
-        <h2 className="text-base font-bold tracking-tight text-[#f4ffc7]">IT Admin Board</h2>
+        <h2 className="text-base font-bold tracking-tight text-white">IT Admin Board</h2>
       </div>
 
       <div className="space-y-4 p-3 sm:p-4">
@@ -80,7 +80,7 @@ export function ITAdminBoardCard({
         </div>
 
         <div>
-          <h3 className="mb-2 text-sm font-bold text-[#f4ffc7]">Open P1 tickets ({openP1.length})</h3>
+          <h3 className="mb-2 text-sm font-bold text-white">Open P1 tickets ({openP1.length})</h3>
           <div className="space-y-2">
             {openP1.length === 0 ? (
               <div className="rounded-lg border border-[rgba(124,229,119,0.15)] bg-[rgba(14,124,90,0.1)] p-4 text-center text-xs text-emerald-200/60">
@@ -94,7 +94,7 @@ export function ITAdminBoardCard({
                 >
                   <Link href={`/admin/tickets/${t.id}`} className="flex min-w-0 flex-1 items-center gap-2 hover:underline">
                     <span className="flex-shrink-0 font-mono font-bold text-[#7ce577]">#{t.id}</span>
-                    <span className="truncate font-medium text-[#f4ffc7]">{t.title}</span>
+                    <span className="truncate font-medium text-white">{t.title}</span>
                     <span className="hidden flex-shrink-0 text-emerald-300/60 sm:inline">· {t.employee}</span>
                   </Link>
                   <div className="flex flex-shrink-0 items-center gap-2">
@@ -105,10 +105,10 @@ export function ITAdminBoardCard({
                       disabled={updatingId === t.id}
                       onChange={(e) => changeStatus(t.id, e.target.value)}
                       aria-label={`Status of ticket ${t.id}`}
-                      className="cursor-pointer rounded border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-2 py-1 text-xs font-medium text-[#f4ffc7]"
+                      className="cursor-pointer rounded border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-2 py-1 text-xs font-medium text-white"
                     >
                       {STATUSES.map((s) => (
-                        <option key={s} value={s} className="bg-[#031813] text-[#f4ffc7]">
+                        <option key={s} value={s} className="bg-[#031813] text-white">
                           {statusLabel(s)}
                         </option>
                       ))}
@@ -154,7 +154,7 @@ function Metric({
   return (
     <div className={`rounded-lg border p-3 text-center ${TONES[tone]}`}>
       <div className="mb-1 flex justify-center">{icon}</div>
-      <div className="text-xl font-black text-[#f4ffc7]">{value}</div>
+      <div className="text-xl font-black text-white">{value}</div>
       <div className="mt-0.5 text-[11px] font-medium text-emerald-200/70">{label}</div>
     </div>
   );

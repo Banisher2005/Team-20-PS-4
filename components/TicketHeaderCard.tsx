@@ -32,7 +32,7 @@ export function TicketHeaderCard({ ticket, showEmployee }: { ticket: TicketDetai
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-mono text-sm font-bold text-[#7ce577]">#{ticket.id}</span>
-            <h2 className="break-words text-lg font-bold text-[#f4ffc7]">{ticket.title}</h2>
+            <h2 className="break-words text-lg font-bold text-white">{ticket.title}</h2>
           </div>
           <p className="mt-1 text-sm text-emerald-300/70">
             {ticket.category} · {ticket.team ?? "IT Support"}
@@ -69,7 +69,7 @@ function Item({ label, children }: { label: string; children: React.ReactNode })
   return (
     <div className="min-w-0">
       <dt className="font-medium text-emerald-300/60">{label}</dt>
-      <dd className="mt-0.5 truncate font-semibold text-[#f4ffc7]">{children}</dd>
+      <dd className="mt-0.5 truncate font-semibold text-white">{children}</dd>
     </div>
   );
 }

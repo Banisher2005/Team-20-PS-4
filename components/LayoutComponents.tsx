@@ -158,7 +158,7 @@ export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate
               onClick={onNavigate}
               className={`flex w-full items-center gap-3.5 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-[rgba(124,229,119,0.2)] font-semibold text-[#f4ffc7] shadow-[inset_0_1px_0_rgba(124,229,119,0.3)]"
+                  ? "bg-[rgba(124,229,119,0.2)] font-semibold text-white shadow-[inset_0_1px_0_rgba(124,229,119,0.3)]"
                   : "text-emerald-100/80 hover:bg-[rgba(124,229,119,0.1)] hover:text-white"
               }`}
             >
@@ -196,7 +196,7 @@ export function Header({ title, onMenu }: { title: string; onMenu?: () => void }
           <Menu className="h-5 w-5" />
         </button>
         <div className="hidden h-6 w-0.5 bg-[rgba(124,229,119,0.3)] sm:block" />
-        <h1 className="truncate text-base font-bold tracking-tight text-[#f4ffc7] sm:text-lg">{title}</h1>
+        <h1 className="truncate text-base font-bold tracking-tight text-white sm:text-lg">{title}</h1>
       </div>
 
       <div className="flex items-center gap-1 sm:gap-3">
@@ -292,7 +292,7 @@ function UpdatesBell({ userId }: { userId: string }) {
         <div className="absolute right-0 z-50 mt-2 w-80 sm:w-96 overflow-hidden rounded-xl border border-[rgba(124,229,119,0.25)] bg-[#031813]/95 backdrop-blur-xl shadow-2xl animate-in fade-in zoom-in-95 duration-100">
           <div className="flex items-center justify-between border-b border-[rgba(124,229,119,0.15)] bg-[rgba(14,124,90,0.2)] p-3.5">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-[#f4ffc7]">Notifications</h3>
+              <h3 className="text-sm font-bold text-white">Notifications</h3>
               {count > 0 ? (
                 <span className="rounded-full bg-[rgba(124,229,119,0.2)] px-2 py-0.5 text-[10px] font-bold text-[#7ce577]">
                   {count} new
@@ -307,7 +307,7 @@ function UpdatesBell({ userId }: { userId: string }) {
               <Link
                 href="/tickets"
                 onClick={() => setOpen(false)}
-                className="text-xs font-semibold text-[#7ce577] transition-colors hover:text-[#f4ffc7]"
+                className="text-xs font-semibold text-[#7ce577] transition-colors hover:text-white"
               >
                 View all
               </Link>
@@ -330,7 +330,7 @@ function UpdatesBell({ userId }: { userId: string }) {
                   <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-[#7ce577]" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="truncate font-semibold text-[#f4ffc7]">
+                      <p className="truncate font-semibold text-white">
                         #{t.id} {t.title}
                       </p>
                       <span className="rounded bg-[rgba(124,229,119,0.15)] px-1.5 py-0.5 text-[10px] font-medium text-[#7ce577]">
@@ -350,7 +350,7 @@ function UpdatesBell({ userId }: { userId: string }) {
             <Link
               href="/tickets"
               onClick={() => setOpen(false)}
-              className="text-xs font-semibold text-[#7ce577] transition-colors hover:text-[#f4ffc7]"
+              className="text-xs font-semibold text-[#7ce577] transition-colors hover:text-white"
             >
               Open My Tickets →
             </Link>
@@ -412,7 +412,7 @@ export function UserSwitcher() {
           {isAdmin ? "IT" : (actor?.userId ?? "…")}
         </span>
         <span className="hidden leading-tight sm:block">
-          <span className="block text-sm font-bold text-[#f4ffc7]">{actor?.name ?? "Loading…"}</span>
+          <span className="block text-sm font-bold text-white">{actor?.name ?? "Loading…"}</span>
           <span className="block text-xs text-emerald-200/70">{subtitle}</span>
         </span>
         <ChevronDown className="h-4 w-4 text-emerald-300/70" />
@@ -474,7 +474,7 @@ function SwitchOption({
     >
       <span className="flex w-10 flex-shrink-0 justify-center">{badge}</span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-semibold text-[#f4ffc7]">{name}</span>
+        <span className="block truncate font-semibold text-white">{name}</span>
         <span className="block truncate text-xs text-emerald-300/60">{detail}</span>
       </span>
       {selected && <Check className="h-4 w-4 text-[#7ce577]" />}

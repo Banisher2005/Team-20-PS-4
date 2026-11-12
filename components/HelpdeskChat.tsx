@@ -123,7 +123,7 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
           <div className="flex h-6 w-6 items-center justify-center rounded bg-[#276e6a] text-emerald-300">
             <Bot className="h-4 w-4" />
           </div>
-          <h2 className="text-base font-bold tracking-tight text-[#f4ffc7]">{title}</h2>
+          <h2 className="text-base font-bold tracking-tight text-white">{title}</h2>
         </div>
         {messages.length > 1 && (
           <button onClick={clearChat} className="text-xs font-semibold text-emerald-300/70 hover:text-[#7ce577]">
@@ -155,12 +155,12 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
                 </div>
                 <div className="min-w-0 flex-1 space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-[#f4ffc7]">DeskBot</span>
+                    <span className="text-xs font-bold text-white">DeskBot</span>
                     <div className="h-2 w-2 rounded-xs bg-emerald-500" />
                     {m.timestamp && <span className="ml-auto text-[10px] text-slate-400">{m.timestamp}</span>}
                   </div>
                   {m.steps && m.steps.length > 0 && <ToolSteps steps={m.steps} />}
-                  <div className="space-y-2.5 text-sm leading-relaxed text-[#f4ffc7]">
+                  <div className="space-y-2.5 text-sm leading-relaxed text-white">
                     <FormattedBotMessage text={m.text} steps={m.steps} />
                   </div>
                 </div>
@@ -177,7 +177,7 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
                 <button
                   key={p}
                   onClick={() => send(p)}
-                  className="w-full rounded-lg border border-[rgba(124,229,119,0.3)] bg-[rgba(14,124,90,0.2)] px-3 py-2 text-left text-sm text-[#f4ffc7] transition-colors hover:border-[#7ce577] hover:bg-[rgba(14,124,90,0.35)] sm:w-fit"
+                  className="w-full rounded-lg border border-[rgba(124,229,119,0.3)] bg-[rgba(14,124,90,0.2)] px-3 py-2 text-left text-sm text-white transition-colors hover:border-[#7ce577] hover:bg-[rgba(14,124,90,0.35)] sm:w-fit"
                 >
                   {p}
                 </button>
@@ -212,7 +212,7 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
             onChange={(e) => setInput(e.target.value)}
             placeholder={placeholder ?? "Describe your IT problem..."}
             maxLength={2000}
-            className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#f4ffc7] placeholder-emerald-200/40 focus:outline-hidden"
+            className="min-w-0 flex-1 bg-transparent py-2 text-sm text-white placeholder-emerald-200/40 focus:outline-hidden"
           />
           <button
             type="submit"
@@ -333,7 +333,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   return (
     <div>
       <div className="font-medium text-emerald-300/60">{label}</div>
-      <div className="mt-0.5 font-semibold text-[#f4ffc7]">{children}</div>
+      <div className="mt-0.5 font-semibold text-white">{children}</div>
     </div>
   );
 }
