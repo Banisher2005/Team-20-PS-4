@@ -144,6 +144,15 @@ export function DeskBotUnlock() {
           <p className="text-[11px] text-center text-mute/60 pt-2 leading-relaxed">
             Logged-in default: Karthik S (E101). User switching is available on the main dashboard.
           </p>
+
+          <div className="pt-1 text-center">
+            <a
+              href="/landing"
+              className="text-xs font-medium text-emerald-300/70 hover:text-[#7ce577] transition-colors"
+            >
+              ← Back to Landing Page
+            </a>
+          </div>
         </form>
       </div>
     </main>
