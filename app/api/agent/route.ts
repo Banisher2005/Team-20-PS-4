@@ -20,13 +20,16 @@ export async function POST(request: Request) {
     const message = err instanceof Error ? err.message : "Agent failed";
     console.error("[agent]", message);
     const quota = /429|quota|RESOURCE_EXHAUSTED/i.test(message);
+    const busy = /503|UNAVAILABLE|overloaded|high demand/i.test(message);
     return NextResponse.json(
       {
         error: quota
           ? "Gemini quota reached. Wait a minute and try again."
-          : message,
+          : busy
+            ? "DeskBot's AI service is busy right now. Please try again in a few seconds."
+            : "DeskBot ran into a problem. Please try again.",
       },
-      { status: quota ? 429 : 500 }
+      { status: quota ? 429 : busy ? 503 : 500 }
     );
   }
 }

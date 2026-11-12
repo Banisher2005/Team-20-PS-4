@@ -85,7 +85,9 @@ export default function AgentChat({ onDataChanged }: { onDataChanged?: () => voi
             >
               {m.steps && m.steps.length > 0 && <ToolSteps steps={m.steps} />}
               {m.role === "model" ? (
-                <div className="whitespace-pre-wrap rounded-2xl bg-slate-100 px-3 py-2 text-sm">{m.text}</div>
+                <div className="whitespace-pre-wrap break-words rounded-2xl bg-slate-100 px-3 py-2 text-sm">
+                  <Formatted text={m.text} />
+                </div>
               ) : (
                 m.text
               )}
@@ -120,6 +122,23 @@ export default function AgentChat({ onDataChanged }: { onDataChanged?: () => voi
         </button>
       </form>
     </div>
+  );
+}
+
+/**
+ * Renders **bold** and *italic* from Gemini's reply as React elements (no innerHTML, so no XSS).
+ * Everything else stays plain text; newlines are kept by whitespace-pre-wrap.
+ */
+function Formatted({ text }: { text: string }) {
+  const parts = text.split(/(\*\*[^*\n]+\*\*|\*[^*\n]+\*)/g);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (/^\*\*[^*\n]+\*\*$/.test(part)) return <strong key={i}>{part.slice(2, -2)}</strong>;
+        if (/^\*[^*\n]+\*$/.test(part)) return <em key={i}>{part.slice(1, -1)}</em>;
+        return part;
+      })}
+    </>
   );
 }
 

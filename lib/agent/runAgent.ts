@@ -29,15 +29,17 @@ export async function runAgent(messages: ChatMessage[]): Promise<AgentResult> {
   }));
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents,
-      config: {
-        systemInstruction: buildSystemPrompt(),
-        tools: [{ functionDeclarations }],
-        temperature: 0.2,
-      },
-    });
+    const response = await withRetry((model) =>
+      ai.models.generateContent({
+        model,
+        contents,
+        config: {
+          systemInstruction: buildSystemPrompt(),
+          tools: [{ functionDeclarations }],
+          temperature: 0.2,
+        },
+      })
+    );
 
     const calls = response.functionCalls ?? [];
 
@@ -69,6 +71,31 @@ export async function runAgent(messages: ChatMessage[]): Promise<AgentResult> {
     reply: "I needed too many steps for this request. Please try a simpler or more specific question.",
     steps,
   };
+}
+
+/** Gemini sometimes answers 503 "high demand" (or 500). These are temporary, so retry. */
+const TRANSIENT = /\b(503|500|UNAVAILABLE|overloaded|high demand|INTERNAL)\b/i;
+
+const ATTEMPTS = 3;
+
+/**
+ * Tries the model up to 3 times (waiting 1 s, then 2 s).
+ * Quota errors (429) are not retried: waiting a few seconds does not fix them.
+ */
+async function withRetry<T>(call: (model: string) => Promise<T>): Promise<T> {
+  let lastError: unknown;
+  for (let i = 0; i < ATTEMPTS; i++) {
+    try {
+      return await call(GEMINI_MODEL);
+    } catch (err) {
+      lastError = err;
+      const message = err instanceof Error ? err.message : String(err);
+      if (!TRANSIENT.test(message)) throw err;
+      console.warn(`[agent] Gemini busy (${GEMINI_MODEL}), attempt ${i + 1}/${ATTEMPTS}`);
+      if (i < ATTEMPTS - 1) await new Promise((r) => setTimeout(r, 1000 * 2 ** i));
+    }
+  }
+  throw lastError;
 }
 
 async function runTool(name: string, rawArgs: unknown): Promise<AgentStep> {
