@@ -75,15 +75,15 @@ export function MyTicketsCard({
   const shown = tickets?.slice(0, limit) ?? [];
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-xl border border-emerald-500/20 bg-white/90 backdrop-blur-md shadow-2xs">
-      <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3.5 sm:px-5">
+    <div className="gw-panel flex flex-col overflow-hidden rounded-xl border shadow-2xs">
+      <div className="flex items-center justify-between gap-2 border-b border-[rgba(124,229,119,0.15)] px-4 py-3.5 sm:px-5">
         <div className="flex items-center gap-2">
-          <Ticket className="h-5 w-5 text-emerald-600" />
-          <h2 className="text-base font-bold tracking-tight text-slate-900">{title}</h2>
-          {tickets && <span className="text-xs font-semibold text-slate-400">({tickets.length})</span>}
+          <Ticket className="h-5 w-5 text-[#7ce577]" />
+          <h2 className="text-base font-bold tracking-tight text-[#f4ffc7]">{title}</h2>
+          {tickets && <span className="text-xs font-semibold text-emerald-300/60">({tickets.length})</span>}
         </div>
-        <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
-          <RotateCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-emerald-600" : ""}`} />
+        <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-300/60">
+          <RotateCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#7ce577]" : ""}`} />
           <span className="hidden sm:inline">Refreshes every 5 s</span>
         </div>
       </div>
@@ -102,18 +102,18 @@ export function MyTicketsCard({
             <Link
               key={t.id}
               href={`/tickets/${t.id}`}
-              className="block rounded-lg border border-slate-200/80 p-3 transition-colors hover:border-slate-300 hover:bg-slate-50/60"
+              className="block rounded-lg border border-[rgba(124,229,119,0.15)] bg-[rgba(14,124,90,0.12)] p-3 transition-colors hover:border-[rgba(124,229,119,0.3)] hover:bg-[rgba(14,124,90,0.22)]"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-slate-900">#{t.id}</span>
-                    <span className="truncate text-sm font-semibold text-slate-800">{t.title}</span>
+                    <span className="font-mono text-xs font-bold text-[#7ce577]">#{t.id}</span>
+                    <span className="truncate text-sm font-semibold text-[#f4ffc7]">{t.title}</span>
                     {unseen && (
                       <span className="h-2 w-2 flex-shrink-0 rounded-full bg-emerald-500" title="New update from IT" />
                     )}
                   </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500">
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-emerald-200/60">
                     <span>{t.category}</span>
                     <span>•</span>
                     <span>{t.team ?? "IT Support"}</span>
@@ -127,7 +127,7 @@ export function MyTicketsCard({
                 </div>
               </div>
               {unseen && t.latest_it_update && (
-                <p className="mt-2 truncate rounded bg-emerald-50 px-2 py-1 text-xs text-emerald-900">
+                <p className="mt-2 truncate rounded bg-[rgba(124,229,119,0.1)] px-2 py-1 text-xs text-[#7ce577]">
                   <span className="font-semibold">IT:</span> {t.latest_it_update}
                 </p>
               )}
@@ -137,10 +137,10 @@ export function MyTicketsCard({
       </div>
 
       {showViewAll && tickets && tickets.length > 0 && (
-        <div className="border-t border-slate-100 bg-slate-50/50 px-5 py-3 text-center">
+        <div className="border-t border-[rgba(124,229,119,0.15)] bg-[rgba(3,18,14,0.2)] px-5 py-3 text-center">
           <Link
             href="/tickets"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 transition-colors hover:text-emerald-700"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7ce577] transition-colors hover:text-[#f4ffc7]"
           >
             <span>View all tickets</span>
             <ArrowRight className="h-3.5 w-3.5" />

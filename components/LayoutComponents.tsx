@@ -82,7 +82,7 @@ export function AppShell({ title, children }: { title: string; children: React.R
 
   return (
     <ShellContext.Provider value={state}>
-      <div className="flex h-dvh w-full overflow-hidden bg-[#03120e]/60 backdrop-blur-xs font-sans text-slate-800 antialiased">
+      <div className="gw-root flex h-dvh w-full font-sans text-slate-800 antialiased" style={{overflow: "hidden"}}>
         {/* Desktop sidebar */}
         <div className="hidden md:flex">
           <Sidebar role={state.actor?.role} />
@@ -136,8 +136,8 @@ export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate
       (href === "/admin" && pathname.startsWith("/admin/tickets"));
 
   return (
-    <aside className="flex w-64 flex-shrink-0 select-none flex-col bg-[#143d3b]/90 backdrop-blur-md text-white border-r border-[#1c4d4b]/60">
-      <div className="flex h-16 items-center gap-3 border-b border-[#1c4d4b]/60 px-6">
+    <aside className="gw-sidebar flex w-64 flex-shrink-0 select-none flex-col text-white border-r border-[rgba(124,229,119,0.15)]">
+      <div className="flex h-16 items-center gap-3 border-b border-[rgba(124,229,119,0.15)] px-6">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#276e6a]/80 text-emerald-300 shadow-inner">
           <DeskBotLogo className="h-6 w-6" />
         </div>
@@ -157,10 +157,12 @@ export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate
               href={item.href}
               onClick={onNavigate}
               className={`flex w-full items-center gap-3.5 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                active ? "bg-[#bbf7d0] font-semibold text-slate-900" : "text-emerald-100/90 hover:bg-[#1a4a47] hover:text-white"
+                active
+                  ? "bg-[rgba(124,229,119,0.2)] font-semibold text-[#f4ffc7] shadow-[inset_0_1px_0_rgba(124,229,119,0.3)]"
+                  : "text-emerald-100/80 hover:bg-[rgba(124,229,119,0.1)] hover:text-white"
               }`}
             >
-              <Icon className={`h-4 w-4 ${active ? "text-slate-900" : "text-emerald-300"}`} />
+              <Icon className={`h-4 w-4 ${active ? "text-[#7ce577]" : "text-emerald-300"}`} />
               <span>{item.label}</span>
             </Link>
           );
@@ -184,17 +186,17 @@ export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate
 export function Header({ title, onMenu }: { title: string; onMenu?: () => void }) {
   const { actor } = useActingUser();
   return (
-    <header className="flex h-16 flex-shrink-0 items-center justify-between gap-2 border-b border-emerald-500/20 bg-white/80 backdrop-blur-md px-3 shadow-2xs sm:px-6">
+    <header className="gw-header flex h-16 flex-shrink-0 items-center justify-between gap-2 px-3 sm:px-6">
       <div className="flex min-w-0 items-center gap-2 sm:gap-4">
         <button
           onClick={onMenu}
-          className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 md:hidden"
+          className="rounded-lg p-2 text-emerald-200 hover:bg-[rgba(124,229,119,0.1)] md:hidden"
           aria-label="Open menu"
         >
           <Menu className="h-5 w-5" />
         </button>
-        <div className="hidden h-6 w-0.5 bg-slate-300 sm:block" />
-        <h1 className="truncate text-base font-bold tracking-tight text-slate-800 sm:text-lg">{title}</h1>
+        <div className="hidden h-6 w-0.5 bg-[rgba(124,229,119,0.3)] sm:block" />
+        <h1 className="truncate text-base font-bold tracking-tight text-[#f4ffc7] sm:text-lg">{title}</h1>
       </div>
 
       <div className="flex items-center gap-1 sm:gap-3">
@@ -204,7 +206,7 @@ export function Header({ title, onMenu }: { title: string; onMenu?: () => void }
           onClick={logout}
           title="Log out"
           aria-label="Log out"
-          className="rounded p-1.5 text-slate-400 transition-colors hover:text-slate-700"
+          className="rounded p-1.5 text-emerald-300/70 transition-colors hover:text-[#7ce577]"
         >
           <LogOut className="h-4 w-4" />
         </button>
@@ -287,16 +289,16 @@ function UpdatesBell({ userId }: { userId: string }) {
 
       {/* Notifications Panel Dropdown */}
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-80 sm:w-96 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl animate-in fade-in zoom-in-95 duration-100">
-          <div className="flex items-center justify-between border-b border-slate-100 bg-[#fafcfb] p-3.5">
+        <div className="absolute right-0 z-50 mt-2 w-80 sm:w-96 overflow-hidden rounded-xl border border-[rgba(124,229,119,0.25)] bg-[#031813]/95 backdrop-blur-xl shadow-2xl animate-in fade-in zoom-in-95 duration-100">
+          <div className="flex items-center justify-between border-b border-[rgba(124,229,119,0.15)] bg-[rgba(14,124,90,0.2)] p-3.5">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-slate-900">Notifications</h3>
+              <h3 className="text-sm font-bold text-[#f4ffc7]">Notifications</h3>
               {count > 0 ? (
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                <span className="rounded-full bg-[rgba(124,229,119,0.2)] px-2 py-0.5 text-[10px] font-bold text-[#7ce577]">
                   {count} new
                 </span>
               ) : (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+                <span className="rounded-full bg-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[10px] font-medium text-emerald-200/60">
                   All caught up
                 </span>
               )}
@@ -305,16 +307,16 @@ function UpdatesBell({ userId }: { userId: string }) {
               <Link
                 href="/tickets"
                 onClick={() => setOpen(false)}
-                className="text-xs font-semibold text-emerald-700 transition-colors hover:text-emerald-900"
+                className="text-xs font-semibold text-[#7ce577] transition-colors hover:text-[#f4ffc7]"
               >
                 View all
               </Link>
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+          <div className="max-h-80 overflow-y-auto divide-y divide-[rgba(124,229,119,0.1)]">
             {count === 0 ? (
-              <div className="py-8 text-center text-xs text-slate-400">
+              <div className="py-8 text-center text-xs text-emerald-200/50">
                 No new IT ticket updates or unread alerts.
               </div>
             ) : (
@@ -323,19 +325,19 @@ function UpdatesBell({ userId }: { userId: string }) {
                   key={t.id}
                   href={`/tickets/${t.id}`}
                   onClick={() => setOpen(false)}
-                  className="flex items-start gap-3 p-3.5 text-xs transition-colors hover:bg-slate-50"
+                  className="flex items-start gap-3 p-3.5 text-xs transition-colors hover:bg-[rgba(124,229,119,0.1)]"
                 >
-                  <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-emerald-500" />
+                  <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-[#7ce577]" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="truncate font-semibold text-slate-900">
+                      <p className="truncate font-semibold text-[#f4ffc7]">
                         #{t.id} {t.title}
                       </p>
-                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
+                      <span className="rounded bg-[rgba(124,229,119,0.15)] px-1.5 py-0.5 text-[10px] font-medium text-[#7ce577]">
                         {t.status}
                       </span>
                     </div>
-                    <p className="mt-1 text-slate-500">
+                    <p className="mt-1 text-emerald-300/60">
                       New update from IT staff · Priority {t.priority}
                     </p>
                   </div>
@@ -344,11 +346,11 @@ function UpdatesBell({ userId }: { userId: string }) {
             )}
           </div>
 
-          <div className="border-t border-slate-100 bg-[#fafcfb] p-2.5 text-center">
+          <div className="border-t border-[rgba(124,229,119,0.15)] bg-[rgba(14,124,90,0.15)] p-2.5 text-center">
             <Link
               href="/tickets"
               onClick={() => setOpen(false)}
-              className="text-xs font-semibold text-emerald-800 transition-colors hover:text-emerald-950"
+              className="text-xs font-semibold text-[#7ce577] transition-colors hover:text-[#f4ffc7]"
             >
               Open My Tickets →
             </Link>
@@ -400,43 +402,43 @@ export function UserSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={open}
         title="Switch user"
-        className="flex items-center gap-2 rounded-lg px-1.5 py-1 text-left transition-colors hover:bg-slate-50 disabled:opacity-60 sm:gap-3"
+        className="flex items-center gap-2 rounded-lg px-1.5 py-1 text-left transition-colors hover:bg-[rgba(124,229,119,0.1)] disabled:opacity-60 sm:gap-3"
       >
         <span
           className={`inline-flex items-center rounded border px-2 py-0.5 font-mono text-xs font-bold ${
-            isAdmin ? "border-amber-200 bg-amber-50 text-amber-800" : "border-[#bbf7d0] bg-[#dcfce7] text-[#166534]"
+            isAdmin ? "border-amber-400/40 bg-amber-500/20 text-amber-300" : "border-[rgba(124,229,119,0.3)] bg-[rgba(14,124,90,0.3)] text-[#7ce577]"
           }`}
         >
           {isAdmin ? "IT" : (actor?.userId ?? "…")}
         </span>
         <span className="hidden leading-tight sm:block">
-          <span className="block text-sm font-bold text-slate-900">{actor?.name ?? "Loading…"}</span>
-          <span className="block text-xs text-slate-500">{subtitle}</span>
+          <span className="block text-sm font-bold text-[#f4ffc7]">{actor?.name ?? "Loading…"}</span>
+          <span className="block text-xs text-emerald-200/70">{subtitle}</span>
         </span>
-        <ChevronDown className="h-4 w-4 text-slate-500" />
+        <ChevronDown className="h-4 w-4 text-emerald-300/70" />
       </button>
 
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 z-50 mt-2 w-72 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
+          className="absolute right-0 z-50 mt-2 w-72 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-xl border border-[rgba(124,229,119,0.25)] bg-[#031813]/95 backdrop-blur-xl shadow-2xl"
         >
-          <div className="border-b border-slate-100 px-3 py-2 text-xs font-semibold text-slate-500">Switch user (demo)</div>
+          <div className="border-b border-[rgba(124,229,119,0.15)] px-3 py-2 text-xs font-semibold text-emerald-300/70">Switch user (demo)</div>
           <div className="max-h-80 overflow-y-auto py-1">
             <SwitchOption
               selected={isAdmin}
               onClick={() => choose("ADMIN")}
-              badge={<Shield className="h-4 w-4 text-amber-700" />}
+              badge={<Shield className="h-4 w-4 text-amber-400" />}
               name="IT Helpdesk (Admin)"
               detail="Resolve everyone's tickets"
             />
-            <div className="my-1 border-t border-slate-100" />
+            <div className="my-1 border-t border-[rgba(124,229,119,0.15)]" />
             {employees.map((e) => (
               <SwitchOption
                 key={e.id}
                 selected={actor?.userId === e.id}
                 onClick={() => choose(e.id)}
-                badge={<span className="font-mono text-[11px] font-bold text-[#166534]">{e.id}</span>}
+                badge={<span className="font-mono text-[11px] font-bold text-[#7ce577]">{e.id}</span>}
                 name={e.name}
                 detail={e.department}
               />
@@ -466,16 +468,16 @@ function SwitchOption({
       role="option"
       aria-selected={selected}
       onClick={onClick}
-      className={`flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-emerald-50 ${
-        selected ? "bg-emerald-50/70" : ""
+      className={`flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-[rgba(124,229,119,0.12)] ${
+        selected ? "bg-[rgba(124,229,119,0.2)]" : ""
       }`}
     >
       <span className="flex w-10 flex-shrink-0 justify-center">{badge}</span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-semibold text-slate-900">{name}</span>
-        <span className="block truncate text-xs text-slate-500">{detail}</span>
+        <span className="block truncate font-semibold text-[#f4ffc7]">{name}</span>
+        <span className="block truncate text-xs text-emerald-300/60">{detail}</span>
       </span>
-      {selected && <Check className="h-4 w-4 text-emerald-600" />}
+      {selected && <Check className="h-4 w-4 text-[#7ce577]" />}
     </button>
   );
 }

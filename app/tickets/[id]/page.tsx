@@ -96,8 +96,8 @@ function TicketView() {
         </div>
       )}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs sm:p-5">
-        <h3 className="mb-4 text-sm font-bold text-slate-900">Updates</h3>
+      <section className="gw-panel rounded-xl border p-4 shadow-2xs sm:p-5">
+        <h3 className="mb-4 text-sm font-bold text-[#f4ffc7]">Updates</h3>
         <TicketTimeline
           description={ticket.description}
           updates={ticket.updates}
@@ -107,7 +107,7 @@ function TicketView() {
         />
       </section>
 
-      <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 shadow-2xs sm:p-5">
+      <section className="gw-panel space-y-3 rounded-xl border p-4 shadow-2xs sm:p-5">
         {s !== "closed" && (
           <form
             onSubmit={(e) => {
@@ -116,7 +116,7 @@ function TicketView() {
             }}
             className="space-y-2"
           >
-            <label htmlFor="note" className="text-sm font-bold text-slate-900">
+            <label htmlFor="note" className="text-sm font-bold text-[#f4ffc7]">
               {waiting ? "Reply to IT" : "Add details for IT"}
             </label>
             <textarea
@@ -126,7 +126,7 @@ function TicketView() {
               rows={3}
               maxLength={1000}
               placeholder="e.g. The error says 'Authentication failed (809)'."
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+              className="w-full rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-3 py-2 text-sm text-[#f4ffc7] placeholder-emerald-200/50 focus:border-emerald-500 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
             />
             <button
               type="submit"
@@ -138,7 +138,7 @@ function TicketView() {
           </form>
         )}
 
-        <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-3">
+        <div className="flex flex-wrap gap-2 border-t border-[rgba(124,229,119,0.15)] pt-3">
           {s === "resolved" && (
             <ActionButton onClick={() => update({ status: "closed" }, "Thanks! Ticket closed.")} disabled={busy} primary>
               Yes, it&apos;s fixed — close
@@ -155,7 +155,7 @@ function TicketView() {
             </ActionButton>
           )}
         </div>
-        {flash && <p className="text-sm text-slate-700">{flash}</p>}
+        {flash && <p className="text-sm text-emerald-200">{flash}</p>}
       </section>
     </div>
   );
@@ -163,7 +163,7 @@ function TicketView() {
 
 function BackLink() {
   return (
-    <Link href="/tickets" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900">
+    <Link href="/tickets" className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-200/70 hover:text-[#7ce577]">
       <ArrowLeft className="h-4 w-4" /> My tickets
     </Link>
   );
@@ -186,8 +186,8 @@ function ActionButton({
       disabled={disabled}
       className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors disabled:opacity-40 ${
         primary
-          ? "bg-[#143d3b] text-white hover:bg-[#1a4a47]"
-          : "border border-slate-300 bg-white text-slate-800 hover:bg-slate-50"
+          ? "bg-[#7ce577] text-slate-900 hover:bg-[#91db79]"
+          : "border border-[rgba(124,229,119,0.25)] bg-[rgba(14,124,90,0.2)] text-[#f4ffc7] hover:bg-[rgba(14,124,90,0.35)]"
       }`}
     >
       {children}
