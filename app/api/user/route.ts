@@ -1,39 +1,37 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { CURRENT_USER_ID, CURRENT_USER_NAME } from "@/lib/currentUser";
+import { getActor, listEmployees } from "@/lib/actor";
+import { errorResponse } from "@/lib/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/**
+ * GET /api/user -> who the app is acting as + the list for the "Switch user" dropdown.
+ * { actor: { role, userId, name }, profile, employees: [{ id, name, department }] }
+ */
 export async function GET() {
   try {
-    const { data: emp, error } = await getSupabase()
-      .from("employees")
-      .select("id, name, department, location, email, laptop_model")
-      .eq("id", CURRENT_USER_ID)
-      .maybeSingle();
+    const actor = await getActor();
+    const employees = await listEmployees();
 
-    if (error) {
-      console.error("[user GET]", error.message);
+    let profile = null;
+    if (actor.role === "employee") {
+      const { data, error } = await getSupabase()
+        .from("employees")
+        .select("id, name, email, department, location, laptop_model")
+        .eq("id", actor.userId)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      profile = data;
     }
 
-    const employee = emp ?? {
-      id: CURRENT_USER_ID,
-      name: CURRENT_USER_NAME,
-      department: "Engineering",
-      location: "Chennai",
-      designation: "Employee",
-      email: "karthik.s@zentrix.com",
-    };
-
     return NextResponse.json({
-      employee: {
-        ...employee,
-        designation: employee.department || "Employee",
-      },
+      actor,
+      profile,
+      employees: employees.map(({ id, name, department }) => ({ id, name, department })),
     });
   } catch (err) {
-    console.error("[user GET]", err);
-    return NextResponse.json({ error: "Failed to load user" }, { status: 500 });
+    return errorResponse(err, "user");
   }
 }

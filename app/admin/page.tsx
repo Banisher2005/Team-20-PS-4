@@ -1,21 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { PRIORITIES, STATUSES, joinedName, statusLabel } from "@/lib/helpdesk";
-import { PriorityBadge, StatusBadge } from "@/components/Badges";
-
-type Row = {
-  id: number;
-  title: string;
-  category: string;
-  priority: string;
-  status: string;
-  team_id: string;
-  updated_at: string;
-  support_teams: unknown;
-  employees: unknown;
-};
+import { useRouter } from "next/navigation";
+import { AppShell } from "@/components/LayoutComponents";
+import { ITAdminBoardCard, type AdminRow } from "@/components/ITAdminBoardCard";
+import { PriorityBadge, SlaBadge, StatusBadge } from "@/components/Badges";
+import { PRIORITIES, STATUSES, statusLabel } from "@/lib/helpdesk";
+import { formatTimeAgo } from "@/components/MyTicketsCard";
 
 const TEAMS = [
   ["T1", "Network & VPN"],
@@ -25,18 +17,34 @@ const TEAMS = [
   ["T5", "Security"],
 ] as const;
 
-const P1_PROMPT = "Summarise all open P1 tickets.";
+const TABS = [
+  { id: "active", label: "Active" },
+  { id: "overdue", label: "Past SLA" },
+  { id: "waiting", label: "Waiting for user" },
+  { id: "done", label: "Resolved / closed" },
+  { id: "all", label: "All" },
+] as const;
+type Tab = (typeof TABS)[number]["id"];
 
-/** IT Admin board (stretch): all tickets, filters, status changes, P1 summary. */
+const ACTIVE = ["open", "in_progress", "waiting_for_user"];
+
+/** IT admin console: metrics, queue tabs + filters, links to each ticket. */
 export default function AdminPage() {
-  const [rows, setRows] = useState<Row[]>([]);
+  return (
+    <AppShell title="IT Helpdesk · Ticket Queue">
+      <AdminQueue />
+    </AppShell>
+  );
+}
+
+function AdminQueue() {
+  const router = useRouter();
+  const [rows, setRows] = useState<AdminRow[] | null>(null);
   const [error, setError] = useState("");
+  const [tab, setTab] = useState<Tab>("active");
   const [team, setTeam] = useState("");
   const [priority, setPriority] = useState("");
   const [status, setStatus] = useState("");
-  const [saving, setSaving] = useState<number | null>(null);
-  const [summary, setSummary] = useState("");
-  const [summarising, setSummarising] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -56,156 +64,172 @@ export default function AdminPage() {
     return () => clearInterval(timer);
   }, [load]);
 
-  const filtered = useMemo(
-    () =>
-      rows.filter(
-        (r) => (!team || r.team_id === team) && (!priority || r.priority === priority) && (!status || r.status === status)
-      ),
-    [rows, team, priority, status]
-  );
+  const counts = useMemo(() => {
+    const r = rows ?? [];
+    return {
+      active: r.filter((t) => ACTIVE.includes(t.status)).length,
+      overdue: r.filter((t) => t.sla?.overdue).length,
+      waiting: r.filter((t) => t.status === "waiting_for_user").length,
+      done: r.filter((t) => !ACTIVE.includes(t.status)).length,
+      all: r.length,
+    } satisfies Record<Tab, number>;
+  }, [rows]);
 
-  async function changeStatus(id: number, next: string) {
-    setSaving(id);
-    try {
-      const res = await fetch("/api/admin/tickets", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status: next }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Update failed");
-      await load();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Update failed");
-    } finally {
-      setSaving(null);
-    }
-  }
-
-  async function summariseP1() {
-    setSummarising(true);
-    setSummary("");
-    try {
-      const res = await fetch("/api/agent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [{ role: "user", text: P1_PROMPT }] }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Agent failed");
-      setSummary(data.reply);
-    } catch (err) {
-      setSummary(err instanceof Error ? err.message : "Agent failed");
-    } finally {
-      setSummarising(false);
-    }
-  }
+  const filtered = useMemo(() => {
+    const inTab = (t: AdminRow) =>
+      tab === "active"
+        ? ACTIVE.includes(t.status)
+        : tab === "overdue"
+          ? Boolean(t.sla?.overdue)
+          : tab === "waiting"
+            ? t.status === "waiting_for_user"
+            : tab === "done"
+              ? !ACTIVE.includes(t.status)
+              : true;
+    const list = (rows ?? []).filter(
+      (t) => inTab(t) && (!team || t.team_id === team) && (!priority || t.priority === priority) && (!status || t.status === status)
+    );
+    // Overdue first, then by priority, then newest.
+    return list.sort(
+      (a, b) =>
+        Number(Boolean(b.sla?.overdue)) - Number(Boolean(a.sla?.overdue)) ||
+        a.priority.localeCompare(b.priority) ||
+        b.created_at.localeCompare(a.created_at)
+    );
+  }, [rows, tab, team, priority, status]);
 
   const select = "rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm";
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-4 md:p-6">
-      <header className="mb-4 flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <h1 className="text-xl font-semibold">DeskBot · IT Admin board</h1>
-          <p className="text-sm text-slate-500">All tickets across Zentrix · refreshes every 5 s</p>
+    <div className="mx-auto max-w-[1600px] space-y-4 lg:space-y-5">
+      <ITAdminBoardCard
+        rows={rows ?? []}
+        onChanged={load}
+        onSummarizeP1={() => router.push(`/admin/assistant?ask=${encodeURIComponent("Summarise all open P1 tickets.")}`)}
+      />
+
+      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xs">
+        <div className="flex flex-wrap gap-1 border-b border-slate-100 p-2">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                tab === t.id ? "bg-[#86efac] text-slate-900" : "text-slate-600 hover:bg-slate-100"
+              }`}
+            >
+              {t.label} <span className="opacity-60">({counts[t.id]})</span>
+            </button>
+          ))}
         </div>
-        <Link href="/" className="text-sm text-slate-500 hover:text-slate-900">
-          ← Back to chat
-        </Link>
-      </header>
 
-      <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={summariseP1}
-            disabled={summarising}
-            className="rounded-lg bg-red-600 px-3 py-1.5 text-sm text-white disabled:opacity-50"
-          >
-            {summarising ? "Summarising…" : "Summarise open P1s"}
-          </button>
-          <span className="text-xs text-slate-500">Asks DeskBot (uses the getOpenP1Tickets tool)</span>
-        </div>
-        {summary && <p className="mt-3 whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-sm">{summary}</p>}
-      </div>
-
-      <div className="mb-3 flex flex-wrap gap-2">
-        <select value={team} onChange={(e) => setTeam(e.target.value)} className={select} aria-label="Team">
-          <option value="">All teams</option>
-          {TEAMS.map(([id, name]) => (
-            <option key={id} value={id}>
-              {name}
-            </option>
-          ))}
-        </select>
-        <select value={priority} onChange={(e) => setPriority(e.target.value)} className={select} aria-label="Priority">
-          <option value="">All priorities</option>
-          {PRIORITIES.map((p) => (
-            <option key={p}>{p}</option>
-          ))}
-        </select>
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className={select} aria-label="Status">
-          <option value="">All statuses</option>
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {statusLabel(s)}
-            </option>
-          ))}
-        </select>
-        <span className="self-center text-xs text-slate-500">{filtered.length} tickets</span>
-      </div>
-
-      {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
-
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
-        <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
-            <tr>
-              <th className="px-3 py-2">#</th>
-              <th className="px-3 py-2">Title</th>
-              <th className="px-3 py-2">Employee</th>
-              <th className="px-3 py-2">Team</th>
-              <th className="px-3 py-2">Priority</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Change</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {filtered.map((r) => (
-              <tr key={r.id}>
-                <td className="px-3 py-2 text-slate-400">{r.id}</td>
-                <td className="px-3 py-2">
-                  <p className="font-medium">{r.title}</p>
-                  <p className="text-xs text-slate-500">{r.category}</p>
-                </td>
-                <td className="px-3 py-2">{joinedName(r.employees) ?? "—"}</td>
-                <td className="px-3 py-2">{joinedName(r.support_teams) ?? "—"}</td>
-                <td className="px-3 py-2">
-                  <PriorityBadge priority={r.priority} />
-                </td>
-                <td className="px-3 py-2">
-                  <StatusBadge status={r.status} />
-                </td>
-                <td className="px-3 py-2">
-                  <select
-                    value={r.status}
-                    disabled={saving === r.id}
-                    onChange={(e) => changeStatus(r.id, e.target.value)}
-                    className={select}
-                    aria-label={`Status of ticket ${r.id}`}
-                  >
-                    {STATUSES.map((s) => (
-                      <option key={s} value={s}>
-                        {statusLabel(s)}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-              </tr>
+        <div className="flex flex-wrap items-center gap-2 border-b border-slate-100 p-3">
+          <select value={team} onChange={(e) => setTeam(e.target.value)} className={select} aria-label="Team">
+            <option value="">All teams</option>
+            {TEAMS.map(([id, name]) => (
+              <option key={id} value={id}>
+                {name}
+              </option>
             ))}
-          </tbody>
-        </table>
-      </div>
-    </main>
+          </select>
+          <select value={priority} onChange={(e) => setPriority(e.target.value)} className={select} aria-label="Priority">
+            <option value="">All priorities</option>
+            {PRIORITIES.map((p) => (
+              <option key={p}>{p}</option>
+            ))}
+          </select>
+          <select value={status} onChange={(e) => setStatus(e.target.value)} className={select} aria-label="Status">
+            <option value="">All statuses</option>
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {statusLabel(s)}
+              </option>
+            ))}
+          </select>
+          <span className="text-xs text-slate-500">{filtered.length} tickets</span>
+        </div>
+
+        {error && <p className="p-4 text-sm text-red-600">{error}</p>}
+        {rows === null && !error && <p className="p-4 text-sm text-slate-500">Loading…</p>}
+        {rows && filtered.length === 0 && <p className="p-6 text-center text-sm text-slate-400">No tickets here.</p>}
+
+        {/* Phone: cards */}
+        <ul className="divide-y divide-slate-100 md:hidden">
+          {filtered.map((t) => (
+            <li key={t.id}>
+              <Link href={`/admin/tickets/${t.id}`} className="block p-3 hover:bg-slate-50">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="min-w-0 text-sm font-semibold text-slate-900">
+                    <span className="mr-1 font-mono text-xs text-slate-500">#{t.id}</span>
+                    {t.title}
+                  </p>
+                  <PriorityBadge priority={t.priority} />
+                </div>
+                <p className="mt-1 text-xs text-slate-500">
+                  {t.employee} · {t.team}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  <StatusBadge status={t.status} />
+                  <SlaBadge sla={t.sla} />
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* Desktop: table */}
+        <div className="hidden overflow-x-auto md:block">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th className="px-3 py-2">#</th>
+                <th className="px-3 py-2">Ticket</th>
+                <th className="px-3 py-2">Employee</th>
+                <th className="px-3 py-2">Team</th>
+                <th className="px-3 py-2">Priority</th>
+                <th className="px-3 py-2">Status</th>
+                <th className="px-3 py-2">SLA</th>
+                <th className="px-3 py-2">Updated</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filtered.map((t) => (
+                <tr
+                  key={t.id}
+                  onClick={() => router.push(`/admin/tickets/${t.id}`)}
+                  className="cursor-pointer hover:bg-emerald-50/40"
+                >
+                  <td className="px-3 py-2.5 font-mono text-xs font-bold text-slate-500">{t.id}</td>
+                  <td className="px-3 py-2.5">
+                    <Link href={`/admin/tickets/${t.id}`} className="font-semibold text-slate-900 hover:underline">
+                      {t.title}
+                    </Link>
+                    <p className="text-xs text-slate-500">
+                      {t.category}
+                      {t.update_count > 0 && ` · ${t.update_count} note${t.update_count > 1 ? "s" : ""}`}
+                    </p>
+                  </td>
+                  <td className="px-3 py-2.5">
+                    {t.employee}
+                    <span className="block font-mono text-[11px] text-slate-400">{t.employee_id}</span>
+                  </td>
+                  <td className="px-3 py-2.5">{t.team}</td>
+                  <td className="px-3 py-2.5">
+                    <PriorityBadge priority={t.priority} />
+                  </td>
+                  <td className="px-3 py-2.5">
+                    <StatusBadge status={t.status} />
+                  </td>
+                  <td className="px-3 py-2.5">
+                    <SlaBadge sla={t.sla} />
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-2.5 text-xs text-slate-500">{formatTimeAgo(t.updated_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   );
 }
