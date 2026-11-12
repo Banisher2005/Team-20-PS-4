@@ -97,7 +97,7 @@ function TicketView() {
       )}
 
       <section className="gw-panel rounded-xl border p-4 shadow-2xs sm:p-5">
-        <h3 className="mb-4 text-sm font-bold text-white">Updates</h3>
+        <h3 className="mb-4 text-sm font-bold text-ink">Updates</h3>
         <TicketTimeline
           description={ticket.description}
           updates={ticket.updates}
@@ -116,7 +116,7 @@ function TicketView() {
             }}
             className="space-y-2"
           >
-            <label htmlFor="note" className="text-sm font-bold text-white">
+            <label htmlFor="note" className="text-sm font-bold text-ink">
               {waiting ? "Reply to IT" : "Add details for IT"}
             </label>
             <textarea
@@ -126,7 +126,7 @@ function TicketView() {
               rows={3}
               maxLength={1000}
               placeholder="e.g. The error says 'Authentication failed (809)'."
-              className="w-full rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-3 py-2 text-sm text-white placeholder-emerald-200/50 focus:border-emerald-500 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+              className="w-full rounded-lg border border-edge/25 bg-deep/40 px-3 py-2 text-sm text-ink placeholder-mute2/50 focus:border-emerald-500 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
             />
             <button
               type="submit"
@@ -138,7 +138,7 @@ function TicketView() {
           </form>
         )}
 
-        <div className="flex flex-wrap gap-2 border-t border-[rgba(124,229,119,0.15)] pt-3">
+        <div className="flex flex-wrap gap-2 border-t border-edge/15 pt-3">
           {s === "resolved" && (
             <ActionButton onClick={() => update({ status: "closed" }, "Thanks! Ticket closed.")} disabled={busy} primary>
               Yes, it&apos;s fixed — close
@@ -155,7 +155,7 @@ function TicketView() {
             </ActionButton>
           )}
         </div>
-        {flash && <p className="text-sm text-emerald-200">{flash}</p>}
+        {flash && <p className="text-sm text-mute2">{flash}</p>}
       </section>
     </div>
   );
@@ -163,7 +163,7 @@ function TicketView() {
 
 function BackLink() {
   return (
-    <Link href="/tickets" className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-200/70 hover:text-[#7ce577]">
+    <Link href="/tickets" className="inline-flex items-center gap-1.5 text-sm font-semibold text-mute2/70 hover:text-accent">
       <ArrowLeft className="h-4 w-4" /> My tickets
     </Link>
   );
@@ -186,8 +186,8 @@ function ActionButton({
       disabled={disabled}
       className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors disabled:opacity-40 ${
         primary
-          ? "bg-[#7ce577] text-slate-900 hover:bg-[#91db79]"
-          : "border border-[rgba(124,229,119,0.25)] bg-[rgba(14,124,90,0.2)] text-white hover:bg-[rgba(14,124,90,0.35)]"
+          ? "bg-lime text-slate-900 hover:bg-[#91db79]"
+          : "border border-edge/25 bg-tint/20 text-ink hover:bg-tint/35"
       }`}
     >
       {children}

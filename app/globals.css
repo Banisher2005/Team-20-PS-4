@@ -1,113 +1,234 @@
 @import "tailwindcss";
 
+/* Fonts: IBM Plex Sans + IBM Plex Mono (loaded in app/layout.tsx via next/font).
+   Every font-sans / font-mono class in the app now uses them. */
+@theme inline {
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* ---- Theme colours (switch with <html data-theme="light|dark">) ----
+     Use them like any Tailwind colour: text-ink, border-edge/15, bg-deep/40 … */
+  --color-ink: var(--ink);       /* main text on glass */
+  --color-accent: var(--accent); /* links, active icons, highlights */
+  --color-edge: var(--edge);     /* borders, hover fills (use with /opacity) */
+  --color-deep: var(--deep);     /* sunken areas: inputs, code, rows (use with /opacity) */
+  --color-tint: var(--tint);     /* tinted fills (use with /opacity) */
+  --color-solid: var(--solid);   /* dropdowns, selects, popovers */
+  --color-mute: var(--mute);     /* secondary text / icons */
+  --color-mute2: var(--mute2);   /* labels, subtitles */
+  --color-mute3: var(--mute3);   /* strongest secondary text */
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-lime: #7ce577;         /* brand lime: buttons and dots, same in both themes */
+  /* Neutral boxes inside panels (cards, chips, inputs): no green tint */
+  --color-box: var(--box);
+  --color-box-hover: var(--box-hover);
+  --color-box-line: var(--box-line);
+}
+
 /* ============================================================
-   DESKBOT GLASS SYSTEM
-   Mesh Drift WebGL canvas sits at z-index: -10 (fixed, inset-0)
+   DESKBOT GLASS SYSTEM — light (default) and dark themes
+   Mesh Drift WebGL canvas sits at z-index: -10 (fixed, inset-0).
    All surfaces below use backdrop-filter to blur the shader through.
+   The toggle in the header sets <html data-theme="…"> (saved per browser).
    ============================================================ */
 
-:root {
-  /* Glass material knobs */
-  --gw-blur: 28px;
-  --gw-opacity: 0.82;
-  --gw-saturation: 1.25;
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
 
-  /* Navbar colour behind the card with a little transparency — #031612 / rgb(3, 22, 18) */
-  --gw-tint-rgb: 3, 22, 18;
+  --ink: #0f2a22;
+  --accent: #0b7a50;
+  --edge: rgb(14 124 90);
+  --deep: rgb(200 228 215);
+  --tint: rgb(14 124 90);
+  --solid: #ffffff;
+  --mute: #2c6b56;
+  --mute2: #3a6255;
+  --mute3: #22453a;
+  --warn: #a15c07;
+  --danger: #b42318;
+  --box: rgba(255, 255, 255, 0.62);
+  --box-hover: rgba(255, 255, 255, 0.88);
+  --box-line: rgba(24, 24, 20, 0.1);
 
-  /* Edge highlight */
-  --gw-edge: rgba(124, 229, 119, 0.22);
+  /* Glass material — from the glass controls:
+     Blur 32 · Edge 0.63 · Tint #EADBC8 · Opacity 0.79 · Saturation 1.15
+     Fill  = white surface with a 12% wash of the tint, at 79% opacity.
+     Edge  = white top highlight at 63% + a 1px white rim at 63% × 0.34 ≈ 21%. */
+  --gw-blur: 32px;
+  --gw-saturation: 1.15;
+  --gw-tint: #eadbc8;
+  --gw-opacity: 79%;
+  --gw-edge-line: rgba(255, 255, 255, 0.63);
+  --gw-edge-rim: rgba(255, 255, 255, 0.21);
+  --gw-glass-fill: color-mix(in srgb, color-mix(in srgb, var(--gw-tint) 12%, #ffffff) var(--gw-opacity), transparent);
 
-  /* Heavier glass for sidebar */
-  --gw-sidebar-opacity: 0.90;
+  --gw-panel-bg: var(--gw-glass-fill);
+  --gw-panel-border: var(--gw-edge-rim);
+  --gw-panel-shadow:
+    inset 0 1px 0 var(--gw-edge-line),
+    inset 0 0 0 1px var(--gw-edge-rim),
+    0 20px 52px -25px rgba(70, 52, 30, 0.35);
 
-  /* Header opacity */
-  --gw-header-opacity: 0.85;
+  /* Sidebar + top bar share one material so they read as one frame */
+  --gw-chrome-blur: 32px;
+  --gw-chrome-saturation: 1.15;
+  --gw-chrome-bg: var(--gw-glass-fill);
+  --gw-sidebar-shadow: inset -1px 0 0 var(--gw-edge-line), 4px 0 24px rgba(70, 52, 30, 0.08);
+  --gw-header-shadow: inset 0 -1px 0 var(--gw-edge-line), 0 4px 24px rgba(70, 52, 30, 0.08);
+  --gw-inner-bg: rgba(14, 124, 90, 0.04);
+  /* Chat panel: neutral white glass, low opacity, light blur */
+  --gw-chat-bg: rgba(255, 255, 255, 0.3);
+  --gw-chat-blur: 10px;
+  --gw-chat-border: rgba(255, 255, 255, 0.5);
+  --gw-chat-edge: rgba(255, 255, 255, 0.7);
+  --gw-fallback-panel: rgba(255, 255, 255, 0.95);
+  --gw-fallback-sidebar: rgba(255, 255, 255, 0.97);
+  --gw-text-primary: #0f2a22;
+  --gw-text-secondary: rgba(15, 42, 34, 0.72);
+  --gw-text-muted: rgba(15, 42, 34, 0.58);
+  --gw-scroll: rgba(14, 124, 90, 0.28);
+  --gw-scroll-hover: rgba(14, 124, 90, 0.5);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ink: #ffffff; /* pure white text (was #f4ffc7, yellow-tinted) */
+  --accent: #7ce577;
+  --edge: rgb(124 229 119);
+  --deep: rgb(3 18 14);
+  --tint: rgb(14 124 90);
+  --solid: #031813;
+  --mute: rgba(255, 255, 255, 0.66);  /* neutral white, was mint emerald-300 */
+  --mute2: rgba(255, 255, 255, 0.78); /* was emerald-200 */
+  --mute3: rgba(255, 255, 255, 0.9);  /* was emerald-100 */
+  --warn: oklch(87.9% 0.169 91.605);   /* = amber-300 */
+  --danger: oklch(80.8% 0.114 19.571); /* = red-300 */
+  --box: rgba(0, 0, 0, 0.32);
+  --box-hover: rgba(0, 0, 0, 0.5);
+  --box-line: rgba(255, 255, 255, 0.1);
+
+  --gw-blur: 22px;
+  --gw-saturation: 1.35;
+  --gw-panel-bg: rgba(4, 13, 11, 0.7); /* darker panels in dark mode (was teal 0.28) */
+  --gw-panel-border: rgba(124, 229, 119, 0.2);
+  --gw-panel-shadow:
+    inset 0 1px 0 rgba(124, 229, 119, 0.18),
+    inset 1px 0 0 rgba(124, 229, 119, 0.08),
+    0 8px 32px rgba(3, 18, 14, 0.45),
+    0 2px 8px rgba(3, 18, 14, 0.25);
+  /* Sidebar + top bar share the sidebar's material so they read as one frame */
+  --gw-chrome-blur: 28px;
+  --gw-chrome-saturation: 1.5;
+  --gw-chrome-bg: rgba(3, 22, 18, 0.55);
+  --gw-sidebar-shadow: inset -1px 0 0 rgba(124, 229, 119, 0.12), 4px 0 24px rgba(3, 18, 14, 0.4);
+  --gw-header-shadow: inset 0 -1px 0 rgba(124, 229, 119, 0.12), 0 4px 24px rgba(3, 18, 14, 0.4);
+  --gw-inner-bg: rgba(3, 18, 14, 0.18);
+  /* Chat panel: neutral dark glass, low opacity, light blur */
+  --gw-chat-bg: rgba(4, 8, 7, 0.66); /* darker chat in dark mode */
+  --gw-chat-blur: 10px;
+  --gw-chat-border: rgba(255, 255, 255, 0.1);
+  --gw-chat-edge: rgba(255, 255, 255, 0.08);
+  --gw-fallback-panel: rgba(14, 60, 46, 0.92);
+  --gw-fallback-sidebar: rgba(3, 22, 18, 0.95);
+  --gw-text-primary: #ffffff;
+  --gw-text-secondary: rgba(255, 255, 255, 0.72);
+  --gw-text-muted: rgba(255, 255, 255, 0.6);
+  --gw-scroll: rgba(124, 229, 119, 0.25);
+  --gw-scroll-hover: rgba(124, 229, 119, 0.45);
 }
 
 /* ---- Base glass surface ---- */
 .gw-glass {
-  background: rgba(var(--gw-tint-rgb), var(--gw-opacity));
+  background: var(--gw-panel-bg);
   backdrop-filter: blur(var(--gw-blur)) saturate(var(--gw-saturation));
   -webkit-backdrop-filter: blur(var(--gw-blur)) saturate(var(--gw-saturation));
 }
 
-/* ---- Panel: glass + green edge highlight + depth shadow ---- */
+/* ---- Panel: glass + edge highlight + depth shadow ---- */
 .gw-panel {
-  background: rgba(var(--gw-tint-rgb), var(--gw-opacity));
+  background: var(--gw-panel-bg);
   backdrop-filter: blur(var(--gw-blur)) saturate(var(--gw-saturation));
   -webkit-backdrop-filter: blur(var(--gw-blur)) saturate(var(--gw-saturation));
-  box-shadow:
-    inset 0 1px 0 var(--gw-edge),
-    inset 1px 0 0 rgba(124, 229, 119, 0.08),
-    0 8px 32px rgba(3, 18, 14, 0.45),
-    0 2px 8px rgba(3, 18, 14, 0.25);
-  border-color: rgba(124, 229, 119, 0.2);
+  box-shadow: var(--gw-panel-shadow);
+  border-color: var(--gw-panel-border);
 }
 
-/* ---- Sidebar glass (deeper tint so it stands out from panels) ---- */
-.gw-sidebar {
-  background: rgba(3, 22, 18, var(--gw-sidebar-opacity));
-  backdrop-filter: blur(28px) saturate(1.5);
-  -webkit-backdrop-filter: blur(28px) saturate(1.5);
-  box-shadow:
-    inset -1px 0 0 rgba(124, 229, 119, 0.12),
-    4px 0 24px rgba(3, 18, 14, 0.4);
-}
-
-/* ---- Header glass (lighter, almost transparent) ---- */
+/* ---- Sidebar + top bar: one shared "frame" material ---- */
+.gw-sidebar,
 .gw-header {
-  background: rgba(var(--gw-tint-rgb), var(--gw-header-opacity));
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  box-shadow:
-    inset 0 -1px 0 rgba(124, 229, 119, 0.15),
-    0 2px 16px rgba(3, 18, 14, 0.3);
+  background: var(--gw-chrome-bg);
+  backdrop-filter: blur(var(--gw-chrome-blur)) saturate(var(--gw-chrome-saturation));
+  -webkit-backdrop-filter: blur(var(--gw-chrome-blur)) saturate(var(--gw-chrome-saturation));
+}
+.gw-sidebar { box-shadow: var(--gw-sidebar-shadow); }
+.gw-header  { box-shadow: var(--gw-header-shadow); }
+
+/* ---- Helpdesk chat: clear, untinted glass so the background shows through ---- */
+.gw-chat {
+  background: var(--gw-chat-bg);
+  backdrop-filter: blur(var(--gw-chat-blur)) saturate(1.05);
+  -webkit-backdrop-filter: blur(var(--gw-chat-blur)) saturate(1.05);
+  border-color: var(--gw-chat-border);
+  box-shadow: inset 0 1px 0 var(--gw-chat-edge), 0 20px 52px -25px rgba(0, 0, 0, 0.25);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .gw-chat { background: var(--gw-fallback-panel); }
 }
 
 /* ---- Inner message area / subtle depth ---- */
 .gw-inner {
-  background: rgba(3, 18, 14, 0.18);
+  background: var(--gw-inner-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
 
-/* ---- App shell root — fully transparent so shader shines through ---- */
+/* ---- App shell root — fully transparent so the shader shines through ---- */
 .gw-root {
   background: transparent;
 }
 
-/* Fallback: browsers that don't support backdrop-filter get a solid dark teal */
+/* Fallback: browsers without backdrop-filter get a solid surface */
 @supports not (backdrop-filter: blur(1px)) {
   .gw-glass,
   .gw-panel {
-    background: rgba(3, 22, 18, 0.95);
+    background: var(--gw-fallback-panel);
   }
-  .gw-sidebar {
-    background: rgba(3, 22, 18, 0.95);
-  }
+  .gw-sidebar,
   .gw-header {
-    background: rgba(3, 22, 18, 0.92);
+    background: var(--gw-fallback-sidebar);
   }
 }
 
 /* ---- Text legibility on glass ---- */
-.gw-text-primary   { color: #ffffff; }
-.gw-text-secondary { color: rgba(255, 255, 255, 0.85); }
-.gw-text-muted     { color: rgba(255, 255, 255, 0.6); }
+.gw-text-primary   { color: var(--gw-text-primary); }
+.gw-text-secondary { color: var(--gw-text-secondary); }
+.gw-text-muted     { color: var(--gw-text-muted); }
 
 /* ---- Scrollbar styling for glass areas ---- */
 .gw-scroll::-webkit-scrollbar { width: 5px; }
 .gw-scroll::-webkit-scrollbar-track { background: transparent; }
 .gw-scroll::-webkit-scrollbar-thumb {
-  background: rgba(124, 229, 119, 0.25);
+  background: var(--gw-scroll);
   border-radius: 9999px;
 }
 .gw-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(124, 229, 119, 0.45);
+  background: var(--gw-scroll-hover);
 }
 
 body {
   @apply bg-transparent text-slate-900 antialiased;
+  font-family: var(--font-sans);
+  /* Plex at 500 stays crisp over the blurred, moving background; 400 looked thin. */
+  font-weight: 500;
 }
 
+/* Smooth theme switch (skipped for people who prefer reduced motion). */
+@media (prefers-reduced-motion: no-preference) {
+  .theme-transition,
+  .theme-transition * {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease !important;
+  }
+}

@@ -98,7 +98,7 @@ function AdminQueue() {
     );
   }, [rows, tab, team, priority, status]);
 
-  const select = "rounded-lg border border-[rgba(124,229,119,0.25)] bg-[rgba(3,18,14,0.4)] px-2 py-1.5 text-sm text-white";
+  const select = "rounded-lg border border-edge/25 bg-deep/40 px-2 py-1.5 text-sm text-ink";
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-4 lg:space-y-5">
@@ -109,15 +109,15 @@ function AdminQueue() {
       />
 
       <section className="gw-panel overflow-hidden rounded-xl border shadow-2xs">
-        <div className="flex flex-wrap gap-1 border-b border-[rgba(124,229,119,0.15)] p-2">
+        <div className="flex flex-wrap gap-1 border-b border-edge/15 p-2">
           {TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                 tab === t.id
-                  ? "bg-[#7ce577] text-slate-900"
-                  : "text-emerald-200/70 hover:bg-[rgba(124,229,119,0.1)] hover:text-white"
+                  ? "bg-lime text-slate-900"
+                  : "text-mute2/70 hover:bg-edge/10 hover:text-ink"
               }`}
             >
               {t.label} <span className="opacity-60">({counts[t.id]})</span>
@@ -125,49 +125,49 @@ function AdminQueue() {
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 border-b border-[rgba(124,229,119,0.15)] p-3">
+        <div className="flex flex-wrap items-center gap-2 border-b border-edge/15 p-3">
           <select value={team} onChange={(e) => setTeam(e.target.value)} className={select} aria-label="Team">
-            <option value="" className="bg-[#031813] text-white">All teams</option>
+            <option value="" className="bg-solid text-ink">All teams</option>
             {TEAMS.map(([id, name]) => (
-              <option key={id} value={id} className="bg-[#031813] text-white">
+              <option key={id} value={id} className="bg-solid text-ink">
                 {name}
               </option>
             ))}
           </select>
           <select value={priority} onChange={(e) => setPriority(e.target.value)} className={select} aria-label="Priority">
-            <option value="" className="bg-[#031813] text-white">All priorities</option>
+            <option value="" className="bg-solid text-ink">All priorities</option>
             {PRIORITIES.map((p) => (
-              <option key={p} className="bg-[#031813] text-white">{p}</option>
+              <option key={p} className="bg-solid text-ink">{p}</option>
             ))}
           </select>
           <select value={status} onChange={(e) => setStatus(e.target.value)} className={select} aria-label="Status">
-            <option value="" className="bg-[#031813] text-white">All statuses</option>
+            <option value="" className="bg-solid text-ink">All statuses</option>
             {STATUSES.map((s) => (
-              <option key={s} value={s} className="bg-[#031813] text-white">
+              <option key={s} value={s} className="bg-solid text-ink">
                 {statusLabel(s)}
               </option>
             ))}
           </select>
-          <span className="text-xs text-emerald-300/70">{filtered.length} tickets</span>
+          <span className="text-xs text-mute/70">{filtered.length} tickets</span>
         </div>
 
-        {error && <p className="p-4 text-sm text-red-400">{error}</p>}
-        {rows === null && !error && <p className="p-4 text-sm text-emerald-200/60">Loading…</p>}
-        {rows && filtered.length === 0 && <p className="p-6 text-center text-sm text-emerald-200/50">No tickets here.</p>}
+        {error && <p className="p-4 text-sm text-danger">{error}</p>}
+        {rows === null && !error && <p className="p-4 text-sm text-mute2/60">Loading…</p>}
+        {rows && filtered.length === 0 && <p className="p-6 text-center text-sm text-mute2/50">No tickets here.</p>}
 
         {/* Phone: cards */}
-        <ul className="divide-y divide-[rgba(124,229,119,0.1)] md:hidden">
+        <ul className="divide-y divide-edge/10 md:hidden">
           {filtered.map((t) => (
             <li key={t.id}>
-              <Link href={`/admin/tickets/${t.id}`} className="block p-3 hover:bg-[rgba(124,229,119,0.08)]">
+              <Link href={`/admin/tickets/${t.id}`} className="block p-3 hover:bg-edge/8">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="min-w-0 text-sm font-semibold text-white">
-                    <span className="mr-1 font-mono text-xs text-[#7ce577]">#{t.id}</span>
+                  <p className="min-w-0 text-sm font-semibold text-ink">
+                    <span className="mr-1 font-mono text-xs text-accent">#{t.id}</span>
                     {t.title}
                   </p>
                   <PriorityBadge priority={t.priority} />
                 </div>
-                <p className="mt-1 text-xs text-emerald-300/70">
+                <p className="mt-1 text-xs text-mute/70">
                   {t.employee} · {t.team}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
@@ -182,7 +182,7 @@ function AdminQueue() {
         {/* Desktop: table */}
         <div className="hidden overflow-x-auto md:block">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-[rgba(124,229,119,0.15)] bg-[rgba(3,18,14,0.3)] text-xs uppercase text-emerald-200/70">
+            <thead className="border-b border-edge/15 bg-deep/30 text-xs uppercase text-mute2/70">
               <tr>
                 <th className="px-3 py-2">#</th>
                 <th className="px-3 py-2">Ticket</th>
@@ -194,28 +194,28 @@ function AdminQueue() {
                 <th className="px-3 py-2">Updated</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[rgba(124,229,119,0.08)]">
+            <tbody className="divide-y divide-edge/8">
               {filtered.map((t) => (
                 <tr
                   key={t.id}
                   onClick={() => router.push(`/admin/tickets/${t.id}`)}
-                  className="cursor-pointer hover:bg-[rgba(124,229,119,0.08)]"
+                  className="cursor-pointer hover:bg-edge/8"
                 >
-                  <td className="px-3 py-2.5 font-mono text-xs font-bold text-[#7ce577]">{t.id}</td>
+                  <td className="px-3 py-2.5 font-mono text-xs font-bold text-accent">{t.id}</td>
                   <td className="px-3 py-2.5">
-                    <Link href={`/admin/tickets/${t.id}`} className="font-semibold text-white hover:underline">
+                    <Link href={`/admin/tickets/${t.id}`} className="font-semibold text-ink hover:underline">
                       {t.title}
                     </Link>
-                    <p className="text-xs text-emerald-300/60">
+                    <p className="text-xs text-mute/60">
                       {t.category}
                       {t.update_count > 0 && ` · ${t.update_count} note${t.update_count > 1 ? "s" : ""}`}
                     </p>
                   </td>
                   <td className="px-3 py-2.5">
-                    <span className="font-medium text-white">{t.employee}</span>
-                    <span className="block font-mono text-[11px] text-emerald-300/50">{t.employee_id}</span>
+                    <span className="font-medium text-ink">{t.employee}</span>
+                    <span className="block font-mono text-[11px] text-mute/50">{t.employee_id}</span>
                   </td>
-                  <td className="px-3 py-2.5 text-emerald-200/80">{t.team}</td>
+                  <td className="px-3 py-2.5 text-mute2/80">{t.team}</td>
                   <td className="px-3 py-2.5">
                     <PriorityBadge priority={t.priority} />
                   </td>
@@ -225,7 +225,7 @@ function AdminQueue() {
                   <td className="px-3 py-2.5">
                     <SlaBadge sla={t.sla} />
                   </td>
-                  <td className="whitespace-nowrap px-3 py-2.5 text-xs text-emerald-300/60">{formatTimeAgo(t.updated_at)}</td>
+                  <td className="whitespace-nowrap px-3 py-2.5 text-xs text-mute/60">{formatTimeAgo(t.updated_at)}</td>
                 </tr>
               ))}
             </tbody>

@@ -338,18 +338,23 @@ export function MeshDriftBackground() {
     const uSpace = gl.getUniformLocation(program, "u_space");
     const uCursor = gl.getUniformLocation(program, "u_cursor");
 
-    // Colors: #03120E, #0E7C5A, #7CE577, #F4FFC7
-    const colorsData = new Float32Array([
-      0.012, 0.071, 0.055, // #03120E
-      0.055, 0.486, 0.353, // #0E7C5A
-      0.486, 0.898, 0.467, // #7CE577
-      0.957, 1.000, 0.780, // #F4FFC7
-      0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0,
-    ]);
-    gl.uniform3fv(uColors, colorsData);
+    // Palettes per theme (4 colours; the rest of the 8 slots stay black and unused).
+    // Dark:  #03120E, #0E7C5A, #7CE577, #F4FFC7  (original)
+    // Light: #F6F4F0, #ECE6DC, #DCE8E0, #FFFFFF  (warm off-white with a faint sage hint; matches the beige glass)
+    const PALETTES = {
+      dark: [0.012, 0.071, 0.055, 0.055, 0.486, 0.353, 0.486, 0.898, 0.467, 0.957, 1.0, 0.78],
+      light: [0.965, 0.957, 0.941, 0.925, 0.902, 0.863, 0.863, 0.91, 0.878, 1.0, 1.0, 1.0],
+    };
+    function applyPalette() {
+      const theme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      const colorsData = new Float32Array(24);
+      colorsData.set(PALETTES[theme]);
+      gl!.uniform3fv(uColors, colorsData);
+    }
+    applyPalette();
+    // Re-colour live when the theme toggle changes <html data-theme>.
+    const themeObserver = new MutationObserver(applyPalette);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
     // Configuration specified:
     // Speed: 33/100, Zoom: 33/100, Intensity: 34/100, Warp: 0/100,
@@ -409,6 +414,7 @@ export function MeshDriftBackground() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      themeObserver.disconnect();
       window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", onVisibilityChange);
 

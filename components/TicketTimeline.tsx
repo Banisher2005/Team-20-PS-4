@@ -70,7 +70,7 @@ function Bubble({
       <div className={`flex max-w-[92%] gap-2 sm:max-w-[80%] ${mine ? "flex-row-reverse" : ""}`}>
         <div
           className={`mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg ${
-            tone === "it" ? "bg-amber-100 text-amber-700" : "bg-[#276e6a] text-emerald-300"
+            tone === "it" ? "bg-amber-100 text-amber-700" : "bg-[#276e6a] text-mute"
           }`}
         >
           {tone === "it" ? <Shield className="h-4 w-4" /> : <Bot className="h-4 w-4" />}

@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import { MeshDriftBackground } from "@/components/background/mesh-drift";
 import { DeskBotLogo } from "@/components/deskbot/deskbot-logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function DeskBotUnlock() {
   const [passcode, setPasscode] = useState("");
@@ -51,6 +52,10 @@ export function DeskBotUnlock() {
       {/* Exact Mesh Drift WebGL Background */}
       <MeshDriftBackground />
 
+      <div className="absolute right-[max(1rem,env(safe-area-inset-right,0px))] top-[max(1rem,env(safe-area-inset-top,0px))] z-20 rounded-full border border-edge/20 bg-solid/60 backdrop-blur-md">
+        <ThemeToggle />
+      </div>
+
       <style>{`
         @keyframes unlockShake {
           0%, 100% { transform: translateX(0); }
@@ -64,7 +69,7 @@ export function DeskBotUnlock() {
 
       {/* Glassmorphic Unlock Container */}
       <div
-        className={`w-full max-w-md overflow-hidden rounded-2xl border border-emerald-400/30 bg-[#03120e]/80 backdrop-blur-xl shadow-2xl p-8 text-white relative z-10 transition-all duration-500 ${
+        className={`w-full max-w-md overflow-hidden rounded-2xl border border-edge/30 bg-solid/80 backdrop-blur-xl shadow-2xl p-8 text-ink relative z-10 transition-all duration-500 ${
           isUnlocked ? "opacity-0 scale-95 -translate-y-4" : "opacity-100 scale-100"
         } ${isShaking ? "shake-animation" : ""}`}
         style={{
@@ -80,7 +85,7 @@ export function DeskBotUnlock() {
               className="h-28 sm:h-32 w-auto max-w-[390px] object-contain drop-shadow-[0_0_25px_rgba(124,229,119,0.4)] transition-transform duration-300 hover:scale-105"
             />
           </div>
-          <p className="text-xs text-emerald-300 font-medium tracking-wide uppercase">
+          <p className="text-xs text-mute font-medium tracking-wide mt-1 uppercase">
             IT Helpdesk Ticket Agent · Zentrix Software
           </p>
         </div>
@@ -88,7 +93,7 @@ export function DeskBotUnlock() {
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-emerald-200 mb-1.5">
+            <label className="block text-xs font-semibold text-mute2 mb-1.5">
               Enter Team Passcode
             </label>
             <div className="relative">
@@ -98,12 +103,12 @@ export function DeskBotUnlock() {
                 onChange={(e) => setPasscode(e.target.value)}
                 placeholder="Access passcode"
                 autoFocus
-                className="w-full rounded-xl border border-emerald-500/40 bg-[#07241c]/60 px-4 py-3 text-sm text-white placeholder-emerald-400/50 outline-none focus:border-[#7ce577] focus:ring-2 focus:ring-[#7ce577]/30 transition-all"
+                className="w-full rounded-xl border border-edge/40 bg-deep/60 px-4 py-3 text-sm text-ink placeholder-mute/50 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-emerald-300 hover:text-white px-2 py-1 rounded transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-mute hover:text-ink px-2 py-1 rounded transition-colors"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
@@ -119,7 +124,7 @@ export function DeskBotUnlock() {
           <button
             type="submit"
             disabled={loading || !passcode.trim()}
-            className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-[#7ce577] to-[#0e7c5a] text-[#03120e] hover:brightness-110 active:scale-[0.98] disabled:opacity-50 transition-all shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-lime to-[#0e7c5a] text-[#03120e] hover:brightness-110 active:scale-[0.98] disabled:opacity-50 transition-all shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2"
           >
             {loading ? (
               <span className="inline-block animate-pulse">Unlocking DeskBot...</span>
@@ -128,7 +133,7 @@ export function DeskBotUnlock() {
             )}
           </button>
 
-          <p className="text-[11px] text-center text-emerald-300/60 pt-2 leading-relaxed">
+          <p className="text-[11px] text-center text-mute/60 pt-2 leading-relaxed">
             Logged-in default: Karthik S (E101). User switching is available on the main dashboard.
           </p>
         </form>

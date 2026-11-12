@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -15,8 +15,11 @@ import {
   X,
   Shield,
   Check,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "./Icons";
 import { DeskBotLogo } from "@/components/deskbot/deskbot-logo";
+import { ThemeToggle } from "./ThemeToggle";
 import { hasUnseenUpdates } from "@/lib/seenUpdates";
 
 // ---------------------------------------------------------------- acting user (from /api/user)
@@ -67,9 +70,44 @@ async function switchUser(userId: string) {
  * Page frame: dark-teal sidebar + header with the "Switch user" menu.
  * On phones the sidebar becomes a slide-in menu.
  */
+const SIDEBAR_KEY = "deskbot-sidebar";
+
 export function AppShell({ title, children }: { title: string; children: React.ReactNode }) {
   const [state, setState] = useState<ShellState>({ actor: null, profile: null, employees: [] });
   const [menuOpen, setMenuOpen] = useState(false);
+  // Desktop sidebar: expanded (labels) or collapsed (icon rail). Remembered per browser.
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    try {
+      setCollapsed(localStorage.getItem(SIDEBAR_KEY) === "collapsed");
+    } catch {
+      // storage blocked: start expanded
+    }
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setCollapsed((c) => {
+      const next = !c;
+      try {
+        localStorage.setItem(SIDEBAR_KEY, next ? "collapsed" : "expanded");
+      } catch {}
+      return next;
+    });
+  }, []);
+
+  // Ctrl+B / Cmd+B toggles the sidebar (like most editors), unless typing in a field.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== "b") return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName))) return;
+      e.preventDefault();
+      toggleSidebar();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [toggleSidebar]);
 
   useEffect(() => {
     fetch("/api/user", { cache: "no-store" })
@@ -85,7 +123,7 @@ export function AppShell({ title, children }: { title: string; children: React.R
       <div className="gw-root flex h-dvh w-full font-sans text-slate-800 antialiased" style={{overflow: "hidden"}}>
         {/* Desktop sidebar */}
         <div className="hidden md:flex">
-          <Sidebar role={state.actor?.role} />
+          <Sidebar role={state.actor?.role} collapsed={collapsed} />
         </div>
 
         {/* Mobile slide-in sidebar */}
@@ -96,7 +134,7 @@ export function AppShell({ title, children }: { title: string; children: React.R
               <Sidebar role={state.actor?.role} onNavigate={() => setMenuOpen(false)} />
               <button
                 onClick={() => setMenuOpen(false)}
-                className="absolute right-3 top-4 rounded p-1 text-emerald-100 hover:bg-[#1a4a47]"
+                className="absolute right-3 top-4 rounded p-1 text-mute3 hover:bg-edge/10"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
@@ -106,7 +144,12 @@ export function AppShell({ title, children }: { title: string; children: React.R
         )}
 
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-          <Header title={title} onMenu={() => setMenuOpen(true)} />
+          <Header
+            title={title}
+            onMenu={() => setMenuOpen(true)}
+            sidebarCollapsed={collapsed}
+            onToggleSidebar={toggleSidebar}
+          />
           <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">{children}</main>
         </div>
       </div>
@@ -127,7 +170,16 @@ const NAV = {
   ],
 };
 
-export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate?: () => void }) {
+export function Sidebar({
+  role,
+  onNavigate,
+  collapsed = false,
+}: {
+  role?: Actor["role"];
+  onNavigate?: () => void;
+  /** Desktop only: icon rail without labels. */
+  collapsed?: boolean;
+}) {
   const pathname = usePathname();
   const items = role ? NAV[role] : [];
 
@@ -136,20 +188,31 @@ export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate
       (href === "/admin" && pathname.startsWith("/admin/tickets"));
 
   return (
-    <aside className="gw-sidebar flex w-64 flex-shrink-0 select-none flex-col text-white border-r border-[rgba(124,229,119,0.15)]">
-      <div className="flex h-20 items-center border-b border-[rgba(124,229,119,0.15)] px-4">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-95 transition-opacity w-full">
-          <img
-            src="/deskbot-logo.png"
-            alt="DeskBot"
-            className="h-14 w-auto max-w-[225px] object-contain drop-shadow-[0_0_15px_rgba(124,229,119,0.3)]"
-          />
+    <aside
+      aria-label="Main navigation"
+      className={`gw-sidebar flex flex-shrink-0 select-none flex-col overflow-hidden border-r border-edge/15 text-ink motion-safe:transition-[width] motion-safe:duration-200 ${
+        collapsed ? "w-[72px]" : "w-64"
+      }`}
+    >
+      <div className={`flex h-20 items-center border-b border-edge/15 ${collapsed ? "justify-center px-2" : "px-4"}`}>
+        <Link href="/" className="flex items-center gap-2 hover:opacity-95 transition-opacity">
+          {collapsed ? (
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#276e6a]/80 text-mute shadow-inner">
+              <DeskBotLogo className="h-7 w-auto" />
+            </div>
+          ) : (
+            <img
+              src="/deskbot-logo.png"
+              alt="DeskBot"
+              className="h-14 w-auto max-w-[225px] object-contain drop-shadow-[0_0_15px_rgba(124,229,119,0.3)]"
+            />
+          )}
         </Link>
       </div>
 
-      <nav className="flex-1 space-y-1.5 px-4 py-6">
-        {role === "admin" && (
-          <p className="px-4 pb-2 text-[11px] font-semibold uppercase tracking-wider text-emerald-300/70">IT Helpdesk</p>
+      <nav className={`flex-1 space-y-1.5 py-6 ${collapsed ? "px-3" : "px-4"}`}>
+        {role === "admin" && !collapsed && (
+          <p className="px-4 pb-2 text-[11px] font-semibold uppercase tracking-wider text-mute/70">IT Helpdesk</p>
         )}
         {items.map((item) => {
           const Icon = item.icon;
@@ -159,20 +222,24 @@ export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate
               key={item.href}
               href={item.href}
               onClick={onNavigate}
-              className={`flex w-full items-center gap-3.5 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+              title={collapsed ? item.label : undefined}
+              aria-current={active ? "page" : undefined}
+              className={`flex w-full items-center rounded-lg py-3 text-sm font-medium transition-colors ${
+                collapsed ? "justify-center px-0" : "gap-3.5 px-4"
+              } ${
                 active
-                  ? "bg-[rgba(124,229,119,0.2)] font-semibold text-white shadow-[inset_0_1px_0_rgba(124,229,119,0.3)]"
-                  : "text-emerald-100/80 hover:bg-[rgba(124,229,119,0.1)] hover:text-white"
+                  ? "bg-edge/20 font-semibold text-ink shadow-[inset_0_1px_0_rgba(124,229,119,0.3)]"
+                  : "text-mute3/80 hover:bg-edge/10 hover:text-ink"
               }`}
             >
-              <Icon className={`h-4 w-4 ${active ? "text-[#7ce577]" : "text-emerald-300"}`} />
-              <span>{item.label}</span>
+              <Icon className={`h-4 w-4 flex-shrink-0 ${active ? "text-accent" : "text-mute"}`} />
+              <span className={collapsed ? "sr-only" : "whitespace-nowrap"}>{item.label}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-6">
+      <div className={collapsed ? "hidden" : "p-6"}>
         <div className="flex items-center gap-1.5 opacity-90">
           <div className="h-3 w-4 -skew-x-12 transform rounded-xs bg-emerald-400" />
           <div className="h-3 w-4 -skew-x-12 transform rounded-xs bg-emerald-400" />
@@ -186,14 +253,26 @@ export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate
 
 // ---------------------------------------------------------------- header
 
-export function Header({ title, onMenu }: { title: string; onMenu?: () => void }) {
+export function Header({
+  title,
+  onMenu,
+  sidebarCollapsed,
+  onToggleSidebar,
+}: {
+  title: string;
+  onMenu?: () => void;
+  sidebarCollapsed?: boolean;
+  onToggleSidebar?: () => void;
+}) {
   const { actor } = useActingUser();
+  const sidebarLabel = sidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)";
   return (
-    <header className="gw-header flex h-16 flex-shrink-0 items-center justify-between gap-2 px-3 sm:px-6">
+    <header className="gw-header border-b border-edge/15 flex h-16 flex-shrink-0 items-center justify-between gap-2 px-3 sm:px-6">
       <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+        {/* Phone: open the slide-in menu */}
         <button
           onClick={onMenu}
-          className="rounded-lg p-2 text-emerald-200 hover:bg-[rgba(124,229,119,0.1)] md:hidden"
+          className="rounded-lg p-2 text-mute2 hover:bg-edge/10 md:hidden"
           aria-label="Open menu"
         >
           <Menu className="h-5 w-5" />
@@ -202,21 +281,34 @@ export function Header({ title, onMenu }: { title: string; onMenu?: () => void }
           <img
             src="/deskbot-logo.png"
             alt="DeskBot"
-            className="h-12 w-auto object-contain"
+            className="h-10 w-auto object-contain"
           />
         </Link>
-        <div className="hidden h-6 w-0.5 bg-[rgba(124,229,119,0.3)] sm:block" />
-        <h1 className="truncate text-base font-bold tracking-tight text-white sm:text-lg">{title}</h1>
+        {/* Desktop: collapse / expand the sidebar */}
+        {onToggleSidebar && (
+          <button
+            onClick={onToggleSidebar}
+            title={sidebarLabel}
+            aria-label={sidebarLabel}
+            aria-expanded={!sidebarCollapsed}
+            className="hidden rounded-lg p-2 text-mute2 transition-colors hover:bg-edge/10 hover:text-accent md:inline-flex"
+          >
+            {sidebarCollapsed ? <PanelLeftOpen className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
+          </button>
+        )}
+        <div className="hidden h-6 w-0.5 bg-edge/30 sm:block" />
+        <h1 className="truncate text-base font-bold tracking-tight text-ink sm:text-lg">{title}</h1>
       </div>
 
       <div className="flex items-center gap-1 sm:gap-3">
+        <ThemeToggle />
         {actor?.role === "employee" && <UpdatesBell userId={actor.userId} />}
         <UserSwitcher />
         <button
           onClick={logout}
           title="Log out"
           aria-label="Log out"
-          className="rounded p-1.5 text-emerald-300/70 transition-colors hover:text-[#7ce577]"
+          className="rounded p-1.5 text-mute/70 transition-colors hover:text-accent"
         >
           <LogOut className="h-4 w-4" />
         </button>
@@ -299,16 +391,16 @@ function UpdatesBell({ userId }: { userId: string }) {
 
       {/* Notifications Panel Dropdown */}
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-80 sm:w-96 overflow-hidden rounded-xl border border-[rgba(124,229,119,0.25)] bg-[#031813]/95 backdrop-blur-xl shadow-2xl animate-in fade-in zoom-in-95 duration-100">
-          <div className="flex items-center justify-between border-b border-[rgba(124,229,119,0.15)] bg-[rgba(14,124,90,0.2)] p-3.5">
+        <div className="absolute right-0 z-50 mt-2 w-80 sm:w-96 overflow-hidden rounded-xl border border-edge/25 bg-solid/95 backdrop-blur-xl shadow-2xl animate-in fade-in zoom-in-95 duration-100">
+          <div className="flex items-center justify-between border-b border-edge/15 bg-tint/20 p-3.5">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-white">Notifications</h3>
+              <h3 className="text-sm font-bold text-ink">Notifications</h3>
               {count > 0 ? (
-                <span className="rounded-full bg-[rgba(124,229,119,0.2)] px-2 py-0.5 text-[10px] font-bold text-[#7ce577]">
+                <span className="rounded-full bg-edge/20 px-2 py-0.5 text-[10px] font-bold text-accent">
                   {count} new
                 </span>
               ) : (
-                <span className="rounded-full bg-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[10px] font-medium text-emerald-200/60">
+                <span className="rounded-full bg-ink/8 px-2 py-0.5 text-[10px] font-medium text-mute2/60">
                   All caught up
                 </span>
               )}
@@ -317,16 +409,16 @@ function UpdatesBell({ userId }: { userId: string }) {
               <Link
                 href="/tickets"
                 onClick={() => setOpen(false)}
-                className="text-xs font-semibold text-[#7ce577] transition-colors hover:text-white"
+                className="text-xs font-semibold text-accent transition-colors hover:text-ink"
               >
                 View all
               </Link>
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto divide-y divide-[rgba(124,229,119,0.1)]">
+          <div className="max-h-80 overflow-y-auto divide-y divide-edge/10">
             {count === 0 ? (
-              <div className="py-8 text-center text-xs text-emerald-200/50">
+              <div className="py-8 text-center text-xs text-mute2/50">
                 No new IT ticket updates or unread alerts.
               </div>
             ) : (
@@ -335,19 +427,19 @@ function UpdatesBell({ userId }: { userId: string }) {
                   key={t.id}
                   href={`/tickets/${t.id}`}
                   onClick={() => setOpen(false)}
-                  className="flex items-start gap-3 p-3.5 text-xs transition-colors hover:bg-[rgba(124,229,119,0.1)]"
+                  className="flex items-start gap-3 p-3.5 text-xs transition-colors hover:bg-edge/10"
                 >
-                  <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-[#7ce577]" />
+                  <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-lime" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="truncate font-semibold text-white">
+                      <p className="truncate font-semibold text-ink">
                         #{t.id} {t.title}
                       </p>
-                      <span className="rounded bg-[rgba(124,229,119,0.15)] px-1.5 py-0.5 text-[10px] font-medium text-[#7ce577]">
+                      <span className="rounded bg-edge/15 px-1.5 py-0.5 text-[10px] font-medium text-accent">
                         {t.status}
                       </span>
                     </div>
-                    <p className="mt-1 text-emerald-300/60">
+                    <p className="mt-1 text-mute/60">
                       New update from IT staff · Priority {t.priority}
                     </p>
                   </div>
@@ -356,11 +448,11 @@ function UpdatesBell({ userId }: { userId: string }) {
             )}
           </div>
 
-          <div className="border-t border-[rgba(124,229,119,0.15)] bg-[rgba(14,124,90,0.15)] p-2.5 text-center">
+          <div className="border-t border-edge/15 bg-tint/15 p-2.5 text-center">
             <Link
               href="/tickets"
               onClick={() => setOpen(false)}
-              className="text-xs font-semibold text-[#7ce577] transition-colors hover:text-white"
+              className="text-xs font-semibold text-accent transition-colors hover:text-ink"
             >
               Open My Tickets →
             </Link>
@@ -412,43 +504,43 @@ export function UserSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={open}
         title="Switch user"
-        className="flex items-center gap-2 rounded-lg px-1.5 py-1 text-left transition-colors hover:bg-[rgba(124,229,119,0.1)] disabled:opacity-60 sm:gap-3"
+        className="flex items-center gap-2 rounded-lg px-1.5 py-1 text-left transition-colors hover:bg-edge/10 disabled:opacity-60 sm:gap-3"
       >
         <span
           className={`inline-flex items-center rounded border px-2 py-0.5 font-mono text-xs font-bold ${
-            isAdmin ? "border-amber-400/40 bg-amber-500/20 text-amber-300" : "border-[rgba(124,229,119,0.3)] bg-[rgba(14,124,90,0.3)] text-[#7ce577]"
+            isAdmin ? "border-amber-400/40 bg-amber-500/20 text-warn" : "border-edge/30 bg-tint/30 text-accent"
           }`}
         >
           {isAdmin ? "IT" : (actor?.userId ?? "…")}
         </span>
         <span className="hidden leading-tight sm:block">
-          <span className="block text-sm font-bold text-white">{actor?.name ?? "Loading…"}</span>
-          <span className="block text-xs text-emerald-200/70">{subtitle}</span>
+          <span className="block text-sm font-bold text-ink">{actor?.name ?? "Loading…"}</span>
+          <span className="block text-xs text-mute2/70">{subtitle}</span>
         </span>
-        <ChevronDown className="h-4 w-4 text-emerald-300/70" />
+        <ChevronDown className="h-4 w-4 text-mute/70" />
       </button>
 
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 z-50 mt-2 w-72 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-xl border border-[rgba(124,229,119,0.25)] bg-[#031813]/95 backdrop-blur-xl shadow-2xl"
+          className="absolute right-0 z-50 mt-2 w-72 max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-xl border border-edge/25 bg-solid/95 backdrop-blur-xl shadow-2xl"
         >
-          <div className="border-b border-[rgba(124,229,119,0.15)] px-3 py-2 text-xs font-semibold text-emerald-300/70">Switch user (demo)</div>
+          <div className="border-b border-edge/15 px-3 py-2 text-xs font-semibold text-mute/70">Switch user (demo)</div>
           <div className="max-h-80 overflow-y-auto py-1">
             <SwitchOption
               selected={isAdmin}
               onClick={() => choose("ADMIN")}
-              badge={<Shield className="h-4 w-4 text-amber-400" />}
+              badge={<Shield className="h-4 w-4 text-warn" />}
               name="IT Helpdesk (Admin)"
               detail="Resolve everyone's tickets"
             />
-            <div className="my-1 border-t border-[rgba(124,229,119,0.15)]" />
+            <div className="my-1 border-t border-edge/15" />
             {employees.map((e) => (
               <SwitchOption
                 key={e.id}
                 selected={actor?.userId === e.id}
                 onClick={() => choose(e.id)}
-                badge={<span className="font-mono text-[11px] font-bold text-[#7ce577]">{e.id}</span>}
+                badge={<span className="font-mono text-[11px] font-bold text-accent">{e.id}</span>}
                 name={e.name}
                 detail={e.department}
               />
@@ -478,16 +570,16 @@ function SwitchOption({
       role="option"
       aria-selected={selected}
       onClick={onClick}
-      className={`flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-[rgba(124,229,119,0.12)] ${
-        selected ? "bg-[rgba(124,229,119,0.2)]" : ""
+      className={`flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-edge/12 ${
+        selected ? "bg-edge/20" : ""
       }`}
     >
       <span className="flex w-10 flex-shrink-0 justify-center">{badge}</span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-semibold text-white">{name}</span>
-        <span className="block truncate text-xs text-emerald-300/60">{detail}</span>
+        <span className="block truncate font-semibold text-ink">{name}</span>
+        <span className="block truncate text-xs text-mute/60">{detail}</span>
       </span>
-      {selected && <Check className="h-4 w-4 text-[#7ce577]" />}
+      {selected && <Check className="h-4 w-4 text-accent" />}
     </button>
   );
 }
