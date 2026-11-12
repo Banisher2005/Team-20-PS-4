@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Ticket, RotateCw, ArrowRight } from "lucide-react";
+import { Ticket, RotateCw, ArrowRight } from "./Icons";
 import { PriorityBadge, StatusBadge } from "./Badges";
 import { joinedName } from "@/lib/helpdesk";
 

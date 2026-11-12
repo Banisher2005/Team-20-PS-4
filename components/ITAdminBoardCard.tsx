@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { BarChart3, AlertTriangle, Clock, CheckCircle2, Sparkles, ChevronDown } from "lucide-react";
+import { BarChart3, AlertTriangle, Clock, CheckCircle2, Sparkles, ChevronDown } from "./Icons";
 import { PriorityBadge } from "./Badges";
 
 type AdminRow = {

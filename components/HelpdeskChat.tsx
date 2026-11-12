@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from "react";
-import { Bot, Paperclip, Send, CheckCircle2 } from "lucide-react";
+import { Bot, Paperclip, Send, CheckCircle2 } from "./Icons";
 import type { AgentResult, AgentStep } from "@/lib/agent/types";
 import { PriorityBadge } from "./Badges";
 

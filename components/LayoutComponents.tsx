@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MessageSquare, Ticket, LayoutGrid, Bell, Bot, ChevronDown, LogOut } from "lucide-react";
+import { MessageSquare, Ticket, LayoutGrid, Bell, Bot, ChevronDown, LogOut } from "./Icons";
 
 export interface EmployeeProfile {
   id: string;
