@@ -31,10 +31,10 @@ export function TicketHeaderCard({ ticket, showEmployee }: { ticket: TicketDetai
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-bold text-[#7ce577]">#{ticket.id}</span>
-            <h2 className="break-words text-lg font-bold text-[#f4ffc7]">{ticket.title}</h2>
+            <span className="font-mono text-sm font-bold text-accent">#{ticket.id}</span>
+            <h2 className="break-words text-lg font-bold text-ink">{ticket.title}</h2>
           </div>
-          <p className="mt-1 text-sm text-emerald-300/70">
+          <p className="mt-1 text-sm text-mute/70">
             {ticket.category} · {ticket.team ?? "IT Support"}
           </p>
         </div>
@@ -45,7 +45,7 @@ export function TicketHeaderCard({ ticket, showEmployee }: { ticket: TicketDetai
         </div>
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-[rgba(124,229,119,0.15)] pt-4 text-xs sm:grid-cols-4">
+      <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-edge/15 pt-4 text-xs sm:grid-cols-4">
         <Item label="Created">{fmt(ticket.created_at)}</Item>
         <Item label="Last updated">{fmt(ticket.updated_at)}</Item>
         <Item label="Response target">{ticket.response_hours != null ? `${ticket.response_hours} h` : "—"}</Item>
@@ -68,8 +68,8 @@ export function TicketHeaderCard({ ticket, showEmployee }: { ticket: TicketDetai
 function Item({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="min-w-0">
-      <dt className="font-medium text-emerald-300/60">{label}</dt>
-      <dd className="mt-0.5 truncate font-semibold text-[#f4ffc7]">{children}</dd>
+      <dt className="font-medium text-mute/60">{label}</dt>
+      <dd className="mt-0.5 truncate font-semibold text-ink">{children}</dd>
     </div>
   );
 }

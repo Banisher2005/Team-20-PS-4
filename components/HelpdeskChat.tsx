@@ -116,24 +116,24 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
   const showSamples = samplePrompts.length > 0 && messages.length <= 1 && !loading;
 
   return (
-    <div className="gw-panel flex h-[calc(100dvh-7.5rem)] min-h-[460px] flex-col overflow-hidden rounded-xl border shadow-2xs md:h-[calc(100dvh-9rem)] lg:max-h-[780px]">
+    <div className="gw-chat flex h-[calc(100dvh-7.5rem)] min-h-[460px] flex-col overflow-hidden rounded-xl border shadow-2xs md:h-[calc(100dvh-9rem)] lg:max-h-[780px]">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[rgba(124,229,119,0.15)] px-4 py-3.5 sm:px-5">
+      <div className="flex items-center justify-between border-b border-box-line px-4 py-3.5 sm:px-5">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-6 w-6 items-center justify-center rounded bg-[#276e6a] text-emerald-300">
+          <div className="flex h-6 w-6 items-center justify-center rounded bg-[#276e6a] text-mute">
             <Bot className="h-4 w-4" />
           </div>
-          <h2 className="text-base font-bold tracking-tight text-[#f4ffc7]">{title}</h2>
+          <h2 className="text-base font-bold tracking-tight text-ink">{title}</h2>
         </div>
         {messages.length > 1 && (
-          <button onClick={clearChat} className="text-xs font-semibold text-emerald-300/70 hover:text-[#7ce577]">
+          <button onClick={clearChat} className="text-xs font-semibold text-mute/70 hover:text-accent">
             New chat
           </button>
         )}
       </div>
 
       {/* Messages */}
-      <div className="gw-inner gw-scroll flex-1 space-y-5 overflow-y-auto p-3 sm:p-5">
+      <div className="gw-scroll flex-1 space-y-5 overflow-y-auto p-3 sm:p-5">
         {messages.map((m, idx) => (
           <div key={idx} className={`flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}>
             {m.role === "user" ? (
@@ -150,17 +150,18 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
               </div>
             ) : (
               <div className="flex w-full max-w-[96%] items-start gap-2 sm:max-w-[90%] sm:gap-3">
-                <div className="mt-0.5 hidden h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#276e6a] text-emerald-300 shadow-2xs sm:flex">
+                <div className="mt-0.5 hidden h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#276e6a] text-mute shadow-2xs sm:flex">
                   <Bot className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1 space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-[#f4ffc7]">DeskBot</span>
+                    <span className="text-xs font-bold text-ink">DeskBot</span>
                     <div className="h-2 w-2 rounded-xs bg-emerald-500" />
                     {m.timestamp && <span className="ml-auto text-[10px] text-slate-400">{m.timestamp}</span>}
                   </div>
                   {m.steps && m.steps.length > 0 && <ToolSteps steps={m.steps} />}
-                  <div className="space-y-2.5 text-sm leading-relaxed text-[#f4ffc7]">
+                  {/* Reply bubble: mirrors the user's bubble, corner cut toward the DeskBot avatar */}
+                  <div className="w-fit max-w-full space-y-2.5 rounded-2xl rounded-tl-xs border border-box-line bg-box px-4 py-3 text-sm leading-relaxed text-ink shadow-2xs">
                     <FormattedBotMessage text={m.text} steps={m.steps} />
                   </div>
                 </div>
@@ -177,7 +178,7 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
                 <button
                   key={p}
                   onClick={() => send(p)}
-                  className="w-full rounded-lg border border-[rgba(124,229,119,0.3)] bg-[rgba(14,124,90,0.2)] px-3 py-2 text-left text-sm text-[#f4ffc7] transition-colors hover:border-[#7ce577] hover:bg-[rgba(14,124,90,0.35)] sm:w-fit"
+                  className="w-full rounded-lg border border-box-line bg-box px-3 py-2 text-left text-sm text-ink transition-colors hover:border-accent hover:bg-box-hover sm:w-fit"
                 >
                   {p}
                 </button>
@@ -187,7 +188,7 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
         )}
 
         {loading && (
-          <div className="flex w-fit items-center gap-2 rounded-lg border border-[rgba(124,229,119,0.2)] bg-[rgba(14,124,90,0.15)] px-3 py-2 text-xs font-medium text-emerald-200">
+          <div className="flex w-fit items-center gap-2 rounded-lg border border-box-line bg-box px-3 py-2 text-xs font-medium text-mute2">
             <Bot className="h-4 w-4 animate-pulse text-emerald-600" />
             <span>DeskBot is working on it…</span>
           </div>
@@ -198,13 +199,13 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
       </div>
 
       {/* Input */}
-      <div className="border-t border-[rgba(124,229,119,0.15)] bg-[rgba(3,18,14,0.3)] p-2.5 sm:p-3.5">
+      <div className="border-t border-box-line bg-box p-2.5 sm:p-3.5">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             send(input);
           }}
-          className="flex items-center gap-2 rounded-xl border border-[rgba(124,229,119,0.2)] bg-[rgba(3,18,14,0.25)] px-3 py-1.5 transition-all focus-within:border-[#7ce577] focus-within:ring-1 focus-within:ring-[#7ce577]"
+          className="flex items-center gap-2 rounded-xl border border-box-line bg-box px-3 py-1.5 transition-all focus-within:border-accent focus-within:ring-1 focus-within:ring-accent"
         >
           <input
             type="text"
@@ -212,7 +213,7 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
             onChange={(e) => setInput(e.target.value)}
             placeholder={placeholder ?? "Describe your IT problem..."}
             maxLength={2000}
-            className="min-w-0 flex-1 bg-transparent py-2 text-sm text-[#f4ffc7] placeholder-emerald-200/40 focus:outline-hidden"
+            className="min-w-0 flex-1 bg-transparent py-2 text-sm text-ink placeholder-mute2/40 focus:outline-hidden"
           />
           <button
             type="submit"
@@ -231,7 +232,7 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
 /** Tools used for a reply; click one to see its arguments and result. */
 function ToolSteps({ steps }: { steps: AgentStep[] }) {
   return (
-    <div className="space-y-1 rounded-lg border border-[rgba(124,229,119,0.15)] bg-[rgba(3,18,14,0.3)] p-2 text-xs text-emerald-200/80">
+    <div className="space-y-1 rounded-lg border border-box-line bg-box p-2 text-xs text-mute2/80">
       <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Tools used</div>
       {steps.map((s, i) => (
         <details key={i} className="group">
@@ -241,7 +242,7 @@ function ToolSteps({ steps }: { steps: AgentStep[] }) {
             <span className="text-slate-400">({s.ok ? "success" : "failed"})</span>
             {s.writes && <span className="rounded bg-amber-100 px-1 text-[10px] text-amber-800">writes data</span>}
           </summary>
-          <pre className="mt-1 max-h-48 overflow-auto whitespace-pre-wrap break-words rounded bg-[rgba(3,18,14,0.4)] p-2 text-[11px] text-emerald-200">
+          <pre className="mt-1 max-h-48 overflow-auto whitespace-pre-wrap break-words rounded bg-box p-2 text-[11px] text-mute2">
             {JSON.stringify({ args: s.args, ...(s.ok ? { result: s.result } : { error: s.error }) }, null, 2)}
           </pre>
         </details>
@@ -305,14 +306,14 @@ function FormattedBotMessage({ text, steps }: { text: string; steps?: AgentStep[
       })}
 
       {created && (
-        <div className="mt-3 space-y-3 rounded-xl border border-[rgba(124,229,119,0.3)] bg-[rgba(14,124,90,0.2)] p-3 shadow-2xs sm:p-4">
-          <div className="flex items-center gap-2 text-sm font-bold text-[#7ce577]">
-            <CheckCircle2 className="h-5 w-5 text-[#7ce577]" />
+        <div className="mt-3 space-y-3 rounded-xl border border-box-line bg-box p-3 shadow-2xs sm:p-4">
+          <div className="flex items-center gap-2 text-sm font-bold text-accent">
+            <CheckCircle2 className="h-5 w-5 text-accent" />
             <span>Ticket created successfully!</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 rounded-lg border border-[rgba(124,229,119,0.15)] bg-[rgba(3,18,14,0.3)] p-2.5 text-xs sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 rounded-lg border border-box-line bg-box p-2.5 text-xs sm:grid-cols-4">
             <Field label="Ticket ID">
-              <span className="font-mono font-bold text-[#7ce577]">#{created.id}</span>
+              <span className="font-mono font-bold text-accent">#{created.id}</span>
             </Field>
             <Field label="Category">{created.category}</Field>
             <Field label="Priority">
@@ -321,7 +322,7 @@ function FormattedBotMessage({ text, steps }: { text: string; steps?: AgentStep[
             <Field label="Assigned Team">{created.team ?? "IT Support"}</Field>
           </div>
           {created.response_hours != null && (
-            <p className="text-xs text-emerald-300/70">IT will respond within {created.response_hours} h.</p>
+            <p className="text-xs text-mute/70">IT will respond within {created.response_hours} h.</p>
           )}
         </div>
       )}
@@ -332,8 +333,8 @@ function FormattedBotMessage({ text, steps }: { text: string; steps?: AgentStep[
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="font-medium text-emerald-300/60">{label}</div>
-      <div className="mt-0.5 font-semibold text-[#f4ffc7]">{children}</div>
+      <div className="font-medium text-mute/60">{label}</div>
+      <div className="mt-0.5 font-semibold text-ink">{children}</div>
     </div>
   );
 }
