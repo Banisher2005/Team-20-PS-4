@@ -71,15 +71,16 @@ export function DeskBotUnlock() {
           boxShadow: "0 25px 50px -12px rgba(3, 18, 14, 0.7), 0 0 30px rgba(124, 229, 119, 0.15)",
         }}
       >
-        {/* DeskBot Animated Branding */}
+        {/* DeskBot Branding */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="p-3 rounded-2xl bg-[#0e7c5a]/30 border border-[#7ce577]/30 shadow-inner mb-3">
-            <DeskBotLogo className="w-14 h-14" />
+          <div className="mb-2 flex justify-center w-full">
+            <img
+              src="/deskbot-logo.png"
+              alt="DeskBot"
+              className="h-28 sm:h-32 w-auto max-w-[390px] object-contain drop-shadow-[0_0_25px_rgba(124,229,119,0.4)] transition-transform duration-300 hover:scale-105"
+            />
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-            DeskBot
-          </h1>
-          <p className="text-xs text-emerald-300 font-medium tracking-wide mt-1 uppercase">
+          <p className="text-xs text-emerald-300 font-medium tracking-wide uppercase">
             IT Helpdesk Ticket Agent · Zentrix Software
           </p>
         </div>

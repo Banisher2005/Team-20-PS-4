@@ -137,11 +137,14 @@ export function Sidebar({ role, onNavigate }: { role?: Actor["role"]; onNavigate
 
   return (
     <aside className="gw-sidebar flex w-64 flex-shrink-0 select-none flex-col text-white border-r border-[rgba(124,229,119,0.15)]">
-      <div className="flex h-16 items-center gap-3 border-b border-[rgba(124,229,119,0.15)] px-6">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#276e6a]/80 text-emerald-300 shadow-inner">
-          <DeskBotLogo className="h-6 w-6" />
-        </div>
-        <span className="text-xl font-bold tracking-tight">DeskBot</span>
+      <div className="flex h-20 items-center border-b border-[rgba(124,229,119,0.15)] px-4">
+        <Link href="/" className="flex items-center gap-2 hover:opacity-95 transition-opacity w-full">
+          <img
+            src="/deskbot-logo.png"
+            alt="DeskBot"
+            className="h-14 w-auto max-w-[225px] object-contain drop-shadow-[0_0_15px_rgba(124,229,119,0.3)]"
+          />
+        </Link>
       </div>
 
       <nav className="flex-1 space-y-1.5 px-4 py-6">
@@ -195,6 +198,13 @@ export function Header({ title, onMenu }: { title: string; onMenu?: () => void }
         >
           <Menu className="h-5 w-5" />
         </button>
+        <Link href="/" className="flex items-center md:hidden">
+          <img
+            src="/deskbot-logo.png"
+            alt="DeskBot"
+            className="h-12 w-auto object-contain"
+          />
+        </Link>
         <div className="hidden h-6 w-0.5 bg-[rgba(124,229,119,0.3)] sm:block" />
         <h1 className="truncate text-base font-bold tracking-tight text-white sm:text-lg">{title}</h1>
       </div>
