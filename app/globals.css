@@ -53,13 +53,13 @@
   --box-line: rgba(24, 24, 20, 0.1);
 
   /* Glass material — from the glass controls:
-     Blur 32 · Edge 0.63 · Tint #EADBC8 · Opacity 0.79 · Saturation 1.15
-     Fill  = white surface with a 12% wash of the tint, at 79% opacity.
+     Blur 12 · Edge 0.63 · Tint #EADBC8 · Opacity 0.68 · Saturation 1.15
+     Fill  = white surface with a 12% wash of the tint, at 68% opacity (lets the mesh show through).
      Edge  = white top highlight at 63% + a 1px white rim at 63% × 0.34 ≈ 21%. */
-  --gw-blur: 32px;
+  --gw-blur: 12px;
   --gw-saturation: 1.15;
   --gw-tint: #eadbc8;
-  --gw-opacity: 79%;
+  --gw-opacity: 68%;
   --gw-edge-line: rgba(255, 255, 255, 0.63);
   --gw-edge-rim: rgba(255, 255, 255, 0.21);
   --gw-glass-fill: color-mix(in srgb, color-mix(in srgb, var(--gw-tint) 12%, #ffffff) var(--gw-opacity), transparent);
@@ -72,7 +72,7 @@
     0 20px 52px -25px rgba(70, 52, 30, 0.35);
 
   /* Sidebar + top bar share one material so they read as one frame */
-  --gw-chrome-blur: 32px;
+  --gw-chrome-blur: 12px;
   --gw-chrome-saturation: 1.15;
   --gw-chrome-bg: var(--gw-glass-fill);
   --gw-sidebar-shadow: inset -1px 0 0 var(--gw-edge-line), 4px 0 24px rgba(70, 52, 30, 0.08);
@@ -80,7 +80,7 @@
   --gw-inner-bg: rgba(14, 124, 90, 0.04);
   /* Chat panel: neutral white glass, low opacity, light blur */
   --gw-chat-bg: rgba(255, 255, 255, 0.3);
-  --gw-chat-blur: 10px;
+  --gw-chat-blur: 4px;
   --gw-chat-border: rgba(255, 255, 255, 0.5);
   --gw-chat-edge: rgba(255, 255, 255, 0.7);
   --gw-fallback-panel: rgba(255, 255, 255, 0.95);

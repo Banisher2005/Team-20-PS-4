@@ -340,10 +340,10 @@ export function MeshDriftBackground() {
 
     // Palettes per theme (4 colours; the rest of the 8 slots stay black and unused).
     // Dark:  #03120E, #0E7C5A, #7CE577, #F4FFC7  (original)
-    // Light: #F6F4F0, #ECE6DC, #DCE8E0, #FFFFFF  (warm off-white with a faint sage hint; matches the beige glass)
+    // Light: #E3F2E9, #8FD1AF, #B8EDA4, #FBFBEF  (same family as dark, lifted: soft mint, mint green, light lime, cream)
     const PALETTES = {
       dark: [0.012, 0.071, 0.055, 0.055, 0.486, 0.353, 0.486, 0.898, 0.467, 0.957, 1.0, 0.78],
-      light: [0.965, 0.957, 0.941, 0.925, 0.902, 0.863, 0.863, 0.91, 0.878, 1.0, 1.0, 1.0],
+      light: [0.89, 0.949, 0.914, 0.561, 0.82, 0.686, 0.722, 0.929, 0.643, 0.984, 0.984, 0.937],
     };
     function applyPalette() {
       const theme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";

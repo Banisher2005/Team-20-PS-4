@@ -55,11 +55,17 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
   const [error, setError] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const restored = useRef(false);
+  // Always the latest messages, so send() called from a parent (sendMessage) right after mount
+  // builds on the restored history instead of a stale render's copy.
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
 
   // Restore this user's chat after a reload; reset when the user changes.
   useEffect(() => {
     restored.current = false;
-    setMessages(loadStored(storageKey) ?? [{ role: "model", text: greeting }]);
+    const initial = loadStored(storageKey) ?? [{ role: "model" as const, text: greeting }];
+    messagesRef.current = initial;
+    setMessages(initial);
     restored.current = true;
   }, [storageKey, greeting]);
 
@@ -80,7 +86,8 @@ export const HelpdeskChat = forwardRef<AgentChatHandle, Props>(function Helpdesk
     const trimmed = text.trim();
     if (!trimmed || loading) return;
 
-    const next: Message[] = [...messages, { role: "user", text: trimmed, timestamp: now() }];
+    const next: Message[] = [...messagesRef.current, { role: "user", text: trimmed, timestamp: now() }];
+    messagesRef.current = next;
     setMessages(next);
     setInput("");
     setLoading(true);

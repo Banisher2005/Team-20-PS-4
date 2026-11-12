@@ -62,12 +62,18 @@ export function MyTicketsCard({
   limit = 4,
   title = "My Tickets",
   showViewAll = true,
+  onOpenTicket,
+  activeTicketId = null,
 }: {
   userId: string;
   refreshKey?: number;
   limit?: number;
   title?: string;
   showViewAll?: boolean;
+  /** When set, a plain click opens the ticket here (e.g. in a drawer) instead of navigating. */
+  onOpenTicket?: (id: number) => void;
+  /** Ticket currently open in the drawer, highlighted in the list. */
+  activeTicketId?: number | null;
 }) {
   const [tickets, setTickets] = useState<MyTicket[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -140,12 +146,12 @@ export function MyTicketsCard({
                 aria-selected={active}
                 onClick={() => setFilter(f.key)}
                 className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent ${
-                  active ? "bg-accent text-white shadow-2xs" : "text-mute2 hover:bg-box-hover hover:text-ink"
+                  active ? "bg-accent text-solid shadow-2xs" : "text-mute2 hover:bg-box-hover hover:text-ink"
                 }`}
               >
                 <span>{f.label}</span>
                 {tickets && (
-                  <span className={`font-mono text-[10px] ${active ? "text-white/80" : "text-mute/60"}`}>{counts[f.key]}</span>
+                  <span className={`font-mono text-[10px] ${active ? "text-solid/75" : "text-mute/60"}`}>{counts[f.key]}</span>
                 )}
               </button>
             );
@@ -194,7 +200,16 @@ export function MyTicketsCard({
             <Link
               key={t.id}
               href={`/tickets/${t.id}`}
-              className="block rounded-lg border border-box-line bg-box p-3 transition-colors hover:border-accent/40 hover:bg-box-hover"
+              onClick={(e) => {
+                // Ctrl/Cmd/Shift-click or middle-click still opens the full page (new tab/window).
+                if (!onOpenTicket || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                e.preventDefault();
+                onOpenTicket(t.id);
+              }}
+              aria-current={activeTicketId === t.id ? "true" : undefined}
+              className={`block rounded-lg border p-3 transition-colors hover:border-accent/40 hover:bg-box-hover ${
+                activeTicketId === t.id ? "border-accent bg-box-hover" : "border-box-line bg-box"
+              }`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
